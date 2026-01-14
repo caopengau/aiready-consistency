@@ -9,8 +9,8 @@ const COMMON_SHORT_WORDS = new Set([
   'run', 'try', 'use', 'get', 'set', 'add', 'put', 'map', 'log', 'row', 'col',
   'tab', 'box', 'div', 'nav', 'tag', 'any', 'all', 'one', 'two', 'out', 'off',
   'on', 'yes', 'no', 'now', 'max', 'min', 'sum', 'avg', 'ref', 'src', 'dst',
-  'raw', 'def', 'sub', 'pub', 'pre', 'mid', 'alt', 'opt', 'tmp', 'ext', 'sep',
-  // Additional full words commonly flagged
+  'raw', 'def', 'sub', 'pub', 'pre', 'mid', 'alt', 'opt', 'tmp', 'ext', 'sep',  // Prepositions and conjunctions
+  'and', 'from', 'how', 'pad', 'bar', 'non',  // Additional full words commonly flagged
   'tax', 'cat', 'dog', 'car', 'bus', 'web', 'app', 'war', 'law', 'pay', 'buy',
   'win', 'cut', 'hit', 'hot', 'pop', 'job', 'age', 'act', 'let', 'lot', 'bad',
   'big', 'far', 'few', 'own', 'per', 'red', 'low', 'see', 'six', 'ten', 'way',
@@ -55,12 +55,15 @@ const ACCEPTABLE_ABBREVIATIONS = new Set([
   'ts', 'js', 'jsx', 'tsx', 'py', 'rb', 'vue', 're', 'fn', 'fns', 'mod', 'opts', 'dev',
   // Cloud/Infrastructure
   's3', 'ec2', 'sqs', 'sns', 'vpc', 'ami', 'iam', 'acl', 'elb', 'alb', 'nlb', 'aws',
+  'ses', 'gst', 'cdk', 'btn', 'buf', 'agg', 'ocr', 'ai', 'cf', 'cfn', 'ga',
   // Metrics/Performance
-  'fcp', 'lcp', 'cls', 'ttfb', 'tti', 'fid', 'fps', 'qps', 'rps', 'tps',
+  'fcp', 'lcp', 'cls', 'ttfb', 'tti', 'fid', 'fps', 'qps', 'rps', 'tps', 'wpm',
   // Testing & i18n
-  'po', 'e2e', 'a11y', 'i18n', 'l10n',
+  'po', 'e2e', 'a11y', 'i18n', 'l10n', 'spy',
   // Domain-specific abbreviations (context-aware)
-  'sk', 'fy', 'faq', 'og', 'seo', 'cta', 'roi', 'kpi',
+  'sk', 'fy', 'faq', 'og', 'seo', 'cta', 'roi', 'kpi', 'ttl', 'pct',
+  // Technical abbreviations
+  'mac', 'hex', 'esm', 'git', 'rec', 'loc', 'dup',
   // Boolean helpers (these are intentional short names)
   'is', 'has', 'can', 'did', 'was', 'are',
   // Date/Time context (when in date contexts)
@@ -309,22 +312,32 @@ function analyzeFileNaming(
         // 4. Descriptive aggregate/collection patterns
         // 5. Very long descriptive names (>15 chars)
         // 6. Compound words with 3+ capitals
+        // 7. Helper/utility functions (common patterns)
+        // 8. React hooks (useX pattern)
         
-        const isFactoryPattern = name.match(/(Factory|Builder|Creator|Generator)$/);
+        const isFactoryPattern = name.match(/(Factory|Builder|Creator|Generator|Provider|Adapter|Mock)$/);
         const isEventHandler = name.match(/^on[A-Z]/);
         const isDescriptiveLong = name.length > 15; // Reduced from 20 to 15
+        const isReactHook = name.match(/^use[A-Z]/); // React hooks
         
         // Check for descriptive patterns
         const isDescriptivePattern = name.match(/^(default|total|count|sum|avg|max|min|initial|current|previous|next)\w+/) ||
-                                     name.match(/\w+(Count|Total|Sum|Average|List|Map|Set|Config|Settings|Options|Props)$/);
+                                     name.match(/\w+(Count|Total|Sum|Average|List|Map|Set|Config|Settings|Options|Props|Data|Info|Details|State|Status|Response|Result)$/);
+        
+        // Helper/utility function patterns
+        const isHelperPattern = name.match(/^(to|from|with|without|for|as|into)\w+/) || // toMetadata, withLogger, forPath
+                               name.match(/^\w+(To|From|With|Without|For|As|Into)\w*$/); // metadataTo, pathFrom
+        
+        // Common utility names that are descriptive
+        const isUtilityName = ['cn', 'proxy', 'sitemap', 'robots', 'gtag'].includes(name);
         
         // Count capital letters for compound detection
         const capitalCount = (name.match(/[A-Z]/g) || []).length;
         const isCompoundWord = capitalCount >= 3; // daysSinceLastCommit has 4 capitals
         
-        const hasActionVerb = name.match(/^(get|set|is|has|can|should|create|update|delete|fetch|load|save|process|handle|validate|check|find|search|filter|map|reduce|make|do|run|start|stop|build|parse|format|render|calculate|compute|generate|transform|convert|normalize|sanitize|encode|decode|compress|extract|merge|split|join|sort|compare|test|verify|ensure|apply|execute|invoke|call|emit|dispatch|trigger|listen|subscribe|unsubscribe|add|remove|clear|reset|toggle|enable|disable|open|close|connect|disconnect|send|receive|read|write|import|export|register|unregister|mount|unmount)/);
+        const hasActionVerb = name.match(/^(get|set|is|has|can|should|create|update|delete|fetch|load|save|process|handle|validate|check|find|search|filter|map|reduce|make|do|run|start|stop|build|parse|format|render|calculate|compute|generate|transform|convert|normalize|sanitize|encode|decode|compress|extract|merge|split|join|sort|compare|test|verify|ensure|apply|execute|invoke|call|emit|dispatch|trigger|listen|subscribe|unsubscribe|add|remove|clear|reset|toggle|enable|disable|open|close|connect|disconnect|send|receive|read|write|import|export|register|unregister|mount|unmount|track|store|persist|upsert|derive|classify|combine|discover|activate|require|assert|expect|mask|escape|sign|put|list|complete|page|safe|mock|pick|pluralize|text)/);
         
-        if (!hasActionVerb && !isFactoryPattern && !isEventHandler && !isDescriptiveLong && !isDescriptivePattern && !isCompoundWord) {
+        if (!hasActionVerb && !isFactoryPattern && !isEventHandler && !isDescriptiveLong && !isDescriptivePattern && !isCompoundWord && !isHelperPattern && !isUtilityName && !isReactHook) {
           issues.push({
             file,
             line: lineNumber,
