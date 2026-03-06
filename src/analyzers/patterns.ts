@@ -1,251 +1,84 @@
-import { readFileContent } from '@aiready/core';
+import { readFileSync } from 'fs';
+import { Severity } from '@aiready/core';
 import type { PatternIssue } from '../types';
 
 /**
- * Analyzes code pattern consistency
+ * Detect inconsistent code patterns across files
  */
 export async function analyzePatterns(
-  files: string[]
+  filePaths: string[]
 ): Promise<PatternIssue[]> {
   const issues: PatternIssue[] = [];
+  const contents = new Map<string, string>();
 
-  // Analyze error handling patterns
-  const errorHandlingIssues = await analyzeErrorHandling(files);
-  issues.push(...errorHandlingIssues);
+  // 1. Error handling style
+  const tryCatchPattern = /try\s*\{/g;
+  const catchPattern = /catch\s*\(\s*(\w+)\s*\)/g;
 
-  // Analyze async/await patterns
-  const asyncIssues = await analyzeAsyncPatterns(files);
-  issues.push(...asyncIssues);
-
-  // Analyze import styles
-  const importIssues = await analyzeImportStyles(files);
-  issues.push(...importIssues);
-
-  return issues;
-}
-
-async function analyzeErrorHandling(files: string[]): Promise<PatternIssue[]> {
-  const patterns = {
-    tryCatch: [] as string[],
-    throwsError: [] as string[],
-    returnsNull: [] as string[],
-    returnsError: [] as string[],
+  const styleStats = {
+    tryCatch: 0,
+    thenCatch: 0,
+    asyncAwait: 0,
+    commonJs: 0,
+    esm: 0,
   };
 
-  for (const file of files) {
-    const content = await readFileContent(file);
+  for (const filePath of filePaths) {
+    try {
+      const content = readFileSync(filePath, 'utf-8');
+      contents.set(filePath, content);
 
-    if (content.includes('try {') || content.includes('} catch')) {
-      patterns.tryCatch.push(file);
-    }
-    if (content.match(/throw new \w*Error/)) {
-      patterns.throwsError.push(file);
-    }
-    if (content.match(/return null/)) {
-      patterns.returnsNull.push(file);
-    }
-    if (content.match(/return \{ error:/)) {
-      patterns.returnsError.push(file);
+      if (content.match(tryCatchPattern)) styleStats.tryCatch++;
+      if (content.match(/\.catch\s*\(/)) styleStats.thenCatch++;
+      if (content.match(/\bawait\b/)) styleStats.asyncAwait++;
+
+      if (content.match(/\brequire\s*\(/)) styleStats.commonJs++;
+      if (content.match(/\bimport\b.*\bfrom\b/)) styleStats.esm++;
+    } catch (err) {
+      void err;
     }
   }
 
-  const issues: PatternIssue[] = [];
+  const totalFiles = filePaths.length;
 
-  // Check for mixed error handling strategies
-  const strategiesUsed = Object.values(patterns).filter(
-    (p) => p.length > 0
-  ).length;
-  if (strategiesUsed > 2) {
+  // Report inconsistencies if there's a significant mix
+  if (styleStats.tryCatch > 0 && styleStats.thenCatch > 0) {
+    const dominant =
+      styleStats.tryCatch >= styleStats.thenCatch ? 'try-catch' : '.catch()';
+    const minority = dominant === 'try-catch' ? '.catch()' : 'try-catch';
+
     issues.push({
-      files: [
-        ...new Set([
-          ...patterns.tryCatch,
-          ...patterns.throwsError,
-          ...patterns.returnsNull,
-          ...patterns.returnsError,
-        ]),
-      ],
+      files: filePaths.filter((f) => {
+        const c = contents.get(f) || '';
+        return minority === 'try-catch'
+          ? c.match(tryCatchPattern)
+          : c.match(/\.catch\s*\(/);
+      }),
       type: 'error-handling',
-      description: 'Inconsistent error handling strategies across codebase',
-      examples: [
-        patterns.tryCatch.length > 0
-          ? `Try-catch used in ${patterns.tryCatch.length} files`
-          : '',
-        patterns.throwsError.length > 0
-          ? `Throws errors in ${patterns.throwsError.length} files`
-          : '',
-        patterns.returnsNull.length > 0
-          ? `Returns null in ${patterns.returnsNull.length} files`
-          : '',
-        patterns.returnsError.length > 0
-          ? `Returns error objects in ${patterns.returnsError.length} files`
-          : '',
-      ].filter((e) => e),
-      severity: 'major',
+      description: `Mixed error handling styles: codebase primarily uses ${dominant}, but found ${minority} in some files.`,
+      examples: [dominant, minority],
+      severity: Severity.Minor,
     });
   }
 
-  return issues;
-}
-
-async function analyzeAsyncPatterns(files: string[]): Promise<PatternIssue[]> {
-  const patterns = {
-    asyncAwait: [] as string[],
-    promises: [] as string[],
-    callbacks: [] as string[],
-  };
-
-  for (const file of files) {
-    const content = await readFileContent(file);
-
-    if (content.match(/async\s+(function|\(|[a-zA-Z])/)) {
-      patterns.asyncAwait.push(file);
-    }
-    if (content.match(/\.then\(/) || content.match(/\.catch\(/)) {
-      patterns.promises.push(file);
-    }
-    if (content.match(/callback\s*\(/) || content.match(/\(\s*err\s*,/)) {
-      patterns.callbacks.push(file);
-    }
-  }
-
-  const issues: PatternIssue[] = [];
-
-  // Modern codebases should prefer async/await
-  if (patterns.callbacks.length > 0 && patterns.asyncAwait.length > 0) {
+  if (styleStats.commonJs > 0 && styleStats.esm > 0) {
+    const minority =
+      styleStats.esm >= styleStats.commonJs
+        ? 'CommonJS (require)'
+        : 'ESM (import)';
     issues.push({
-      files: [...patterns.callbacks, ...patterns.asyncAwait],
-      type: 'async-style',
-      description: 'Mixed async patterns: callbacks and async/await',
-      examples: [
-        `Callbacks found in: ${patterns.callbacks.slice(0, 3).join(', ')}`,
-        `Async/await used in: ${patterns.asyncAwait.slice(0, 3).join(', ')}`,
-      ],
-      severity: 'minor',
-    });
-  }
-
-  // Mixing .then() chains with async/await
-  if (
-    patterns.promises.length > patterns.asyncAwait.length * 0.3 &&
-    patterns.asyncAwait.length > 0
-  ) {
-    issues.push({
-      files: patterns.promises,
-      type: 'async-style',
-      description:
-        'Consider using async/await instead of promise chains for consistency',
-      examples: patterns.promises.slice(0, 5),
-      severity: 'info',
-    });
-  }
-
-  return issues;
-}
-
-async function analyzeImportStyles(files: string[]): Promise<PatternIssue[]> {
-  const patterns = {
-    esModules: [] as string[],
-    commonJS: [] as string[],
-    mixed: [] as string[],
-  };
-
-  for (const file of files) {
-    const content = await readFileContent(file);
-    const hasESM = content.match(/^import\s+/m);
-
-    // Check for actual CommonJS require() calls, excluding:
-    // - String literals: "require('...') or 'require('...')
-    // - Regex patterns: /require\(/
-    // - Comments: // require( or /* require( */
-    const hasCJS = hasActualRequireCalls(content);
-
-    if (hasESM && hasCJS) {
-      patterns.mixed.push(file);
-    } else if (hasESM) {
-      patterns.esModules.push(file);
-    } else if (hasCJS) {
-      patterns.commonJS.push(file);
-    }
-  }
-
-  const issues: PatternIssue[] = [];
-
-  // Check for mixed import styles in same file
-  if (patterns.mixed.length > 0) {
-    issues.push({
-      files: patterns.mixed,
+      files: filePaths.filter((f) => {
+        const c = contents.get(f) || '';
+        return minority === 'CommonJS (require)'
+          ? c.match(/\brequire\s*\(/)
+          : c.match(/\bimport\b/);
+      }),
       type: 'import-style',
-      description: 'Mixed ES modules and CommonJS imports in same files',
-      examples: patterns.mixed.slice(0, 5),
-      severity: 'major',
+      description: `Mixed module systems: found both ESM and CommonJS.`,
+      examples: ['import X from "y"', 'const X = require("y")'],
+      severity: Severity.Major,
     });
   }
 
-  // Check for inconsistent styles across project
-  if (patterns.esModules.length > 0 && patterns.commonJS.length > 0) {
-    const ratio =
-      patterns.commonJS.length /
-      (patterns.esModules.length + patterns.commonJS.length);
-    if (ratio > 0.2 && ratio < 0.8) {
-      issues.push({
-        files: [...patterns.esModules, ...patterns.commonJS],
-        type: 'import-style',
-        description: 'Inconsistent import styles across project',
-        examples: [
-          `ES modules: ${patterns.esModules.length} files`,
-          `CommonJS: ${patterns.commonJS.length} files`,
-        ],
-        severity: 'minor',
-      });
-    }
-  }
-
   return issues;
-}
-
-/**
- * Detects actual require() calls, excluding false positives
- * Filters out require() in:
- * - String literals (single/double/template quotes)
- * - Regex patterns
- * - Single-line comments (//)
- * - Multi-line comments
- */
-function hasActualRequireCalls(content: string): boolean {
-  // Simple heuristic: remove obvious false positives
-  // 1. Remove single-line comments
-  let cleaned = content.replace(/\/\/.*$/gm, '');
-
-  // 2. Remove multi-line comments (non-greedy)
-  cleaned = cleaned.replace(/\/\*[\s\S]*?\*\//g, '');
-
-  // 3. Remove string literals - use simpler regex to avoid backtracking
-  // Match strings but don't try to be perfect, just remove obvious ones
-  cleaned = cleaned.replace(/"[^"\n]*"/g, '""');
-  cleaned = cleaned.replace(/'[^'\n]*'/g, "''");
-  cleaned = cleaned.replace(/`[^`]*`/g, '``');
-
-  // 4. Simple regex detection: if we see /require in the line, likely a regex pattern
-  // Remove lines that look like regex patterns with require
-  cleaned = cleaned.replace(/\/[^/\n]*require[^/\n]*\/[gimsuvy]*/g, '');
-
-  // Now check for require( in the cleaned content
-  return /require\s*\(/.test(cleaned);
-}
-
-/**
- * Analyzes API design consistency
- */
-export async function analyzeAPIDesign(
-  files: string[]
-): Promise<PatternIssue[]> {
-  // This would analyze:
-  // - Function parameter order consistency
-  // - Return type patterns
-  // - Options object vs individual parameters
-  // For now, return empty array
-  // Parameter currently unused; reference to avoid lint warnings
-  void files;
-  return [];
 }

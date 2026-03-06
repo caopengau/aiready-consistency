@@ -1,4 +1,4 @@
-import { scanFiles } from '@aiready/core';
+import { scanFiles, Severity, IssueType } from '@aiready/core';
 import type { AnalysisResult, Issue } from '@aiready/core';
 import type {
   ConsistencyOptions,
@@ -20,7 +20,7 @@ export async function analyzeConsistency(
     checkNaming = true,
     checkPatterns = true,
     checkArchitecture = false, // Not implemented yet
-    minSeverity = 'info',
+    minSeverity = Severity.Info,
     ...scanOptions
   } = options;
 
@@ -59,10 +59,10 @@ export async function analyzeConsistency(
     const consistencyIssue: ConsistencyIssue = {
       type:
         issue.type === 'convention-mix'
-          ? 'naming-inconsistency'
-          : 'naming-quality',
+          ? IssueType.NamingInconsistency
+          : IssueType.NamingQuality,
       category: 'naming',
-      severity: issue.severity,
+      severity: getSeverityEnum(issue.severity),
       message: `${issue.type}: ${issue.identifier}`,
       location: {
         file: issue.file,
@@ -85,9 +85,9 @@ export async function analyzeConsistency(
     }
 
     const consistencyIssue: ConsistencyIssue = {
-      type: 'pattern-inconsistency',
+      type: IssueType.PatternInconsistency,
       category: 'patterns',
-      severity: issue.severity,
+      severity: getSeverityEnum(issue.severity),
       message: issue.description,
       location: {
         file: issue.files[0] || 'multiple files',
@@ -120,18 +120,19 @@ export async function analyzeConsistency(
 
   // Sort results by severity first, then by issue count per file
   results.sort((fileResultA, fileResultB) => {
-    const severityOrder = { critical: 0, major: 1, minor: 2, info: 3 };
-
     // Get highest severity in each file
     const maxSeverityA = Math.min(
-      ...fileResultA.issues.map(
-        (i) => severityOrder[(i as ConsistencyIssue).severity]
-      )
+      ...fileResultA.issues.map((i) => {
+        const val = getSeverityLevel((i as ConsistencyIssue).severity);
+        // Map 4->0, 3->1, 2->2, 1->3
+        return val === 4 ? 0 : val === 3 ? 1 : val === 2 ? 2 : 3;
+      })
     );
     const maxSeverityB = Math.min(
-      ...fileResultB.issues.map(
-        (i) => severityOrder[(i as ConsistencyIssue).severity]
-      )
+      ...fileResultB.issues.map((i) => {
+        const val = getSeverityLevel((i as ConsistencyIssue).severity);
+        return val === 4 ? 0 : val === 3 ? 1 : val === 2 ? 2 : 3;
+      })
     );
 
     // Sort by severity first
@@ -154,9 +155,6 @@ export async function analyzeConsistency(
     shouldIncludeSeverity(i.severity, minSeverity)
   ).length;
 
-  // Detect naming conventions (TODO: re-implement for AST version)
-  // const conventionAnalysis = detectNamingConventions(filePaths, namingIssues);
-
   return {
     summary: {
       totalIssues: namingCountFiltered + patternCountFiltered,
@@ -170,21 +168,58 @@ export async function analyzeConsistency(
   };
 }
 
+function getSeverityLevel(s: any): number {
+  if (s === Severity.Critical || s === 'critical') return 4;
+  if (s === Severity.Major || s === 'major') return 3;
+  if (s === Severity.Minor || s === 'minor') return 2;
+  if (s === Severity.Info || s === 'info') return 1;
+  return 0;
+}
+
+function getSeverityEnum(s: any): Severity {
+  const val = getSeverityLevel(s);
+  switch (val) {
+    case 4:
+      return Severity.Critical;
+    case 3:
+      return Severity.Major;
+    case 2:
+      return Severity.Minor;
+    case 1:
+      return Severity.Info;
+    default:
+      return Severity.Info;
+  }
+}
+
 function shouldIncludeSeverity(
-  severity: 'critical' | 'major' | 'minor' | 'info',
-  minSeverity: 'critical' | 'major' | 'minor' | 'info'
+  severity: Severity | string,
+  minSeverity: Severity | string
 ): boolean {
-  const severityLevels = { info: 0, minor: 1, major: 2, critical: 3 };
-  return severityLevels[severity] >= severityLevels[minSeverity];
+  return getSeverityLevel(severity) >= getSeverityLevel(minSeverity);
 }
 
 function calculateConsistencyScore(issues: ConsistencyIssue[]): number {
-  // Higher score = more consistent (fewer issues)
-  const weights = { critical: 10, major: 5, minor: 2, info: 1 };
-  const totalWeight = issues.reduce(
-    (sum, issue) => sum + weights[issue.severity],
-    0
-  );
+  let totalWeight = 0;
+  for (const issue of issues) {
+    const val = getSeverityLevel(issue.severity);
+    switch (val) {
+      case 4:
+        totalWeight += 10;
+        break;
+      case 3:
+        totalWeight += 5;
+        break;
+      case 2:
+        totalWeight += 2;
+        break;
+      case 1:
+        totalWeight += 1;
+        break;
+      default:
+        totalWeight += 1;
+    }
+  }
   // Score from 0-1, where 1 is perfect
   return Math.max(0, 1 - totalWeight / 100);
 }

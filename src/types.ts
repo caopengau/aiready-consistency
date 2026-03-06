@@ -1,4 +1,10 @@
-import type { ScanOptions, AnalysisResult, Issue } from '@aiready/core';
+import type {
+  ScanOptions,
+  AnalysisResult,
+  Issue,
+  Severity,
+  IssueType,
+} from '@aiready/core';
 
 export interface ConsistencyOptions extends ScanOptions {
   /** Check naming conventions and quality */
@@ -8,15 +14,15 @@ export interface ConsistencyOptions extends ScanOptions {
   /** Check architectural consistency */
   checkArchitecture?: boolean;
   /** Minimum severity to report */
-  minSeverity?: 'info' | 'minor' | 'major' | 'critical';
+  minSeverity?: Severity;
 }
 
 export interface ConsistencyIssue extends Issue {
   type:
-    | 'naming-inconsistency'
-    | 'naming-quality'
-    | 'pattern-inconsistency'
-    | 'architecture-inconsistency';
+    | IssueType.NamingInconsistency
+    | IssueType.NamingQuality
+    | IssueType.PatternInconsistency
+    | IssueType.ArchitectureInconsistency;
   category: 'naming' | 'patterns' | 'architecture';
   /** Examples of the inconsistency found */
   examples?: string[];
@@ -28,10 +34,10 @@ export interface NamingIssue {
   file: string;
   line: number;
   column?: number;
-  type: 'poor-naming' | 'convention-mix' | 'abbreviation' | 'unclear';
+  type: string;
   identifier: string;
   suggestion?: string;
-  severity: 'critical' | 'major' | 'minor' | 'info';
+  severity: Severity;
   category?: 'naming';
 }
 
@@ -40,14 +46,14 @@ export interface PatternIssue {
   type: 'error-handling' | 'async-style' | 'import-style' | 'api-design';
   description: string;
   examples: string[];
-  severity: 'critical' | 'major' | 'minor' | 'info';
+  severity: Severity;
 }
 
 export interface ArchitectureIssue {
   type: 'file-organization' | 'module-structure' | 'export-style';
   description: string;
   affectedPaths: string[];
-  severity: 'critical' | 'major' | 'minor' | 'info';
+  severity: Severity;
 }
 
 export interface ConsistencyReport {

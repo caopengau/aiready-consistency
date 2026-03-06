@@ -1,5 +1,6 @@
 import { TSESTree } from '@typescript-eslint/typescript-estree';
 import { traverseAST } from './ast-parser';
+import { Severity } from '@aiready/core';
 
 export type FileType = 'test' | 'production' | 'config' | 'types';
 export type CodeLayer = 'api' | 'business' | 'data' | 'utility' | 'unknown';
@@ -227,38 +228,50 @@ export function buildCodeContext(
  * Get context-adjusted severity based on code context
  */
 export function adjustSeverity(
-  baseSeverity: 'info' | 'minor' | 'major' | 'critical',
+  baseSeverity: Severity | string,
   context: CodeContext,
   issueType: string
-): 'info' | 'minor' | 'major' | 'critical' {
+): Severity {
+  const getEnum = (s: any): Severity => {
+    if (s === Severity.Critical || s === 'critical') return Severity.Critical;
+    if (s === Severity.Major || s === 'major') return Severity.Major;
+    if (s === Severity.Minor || s === 'minor') return Severity.Minor;
+    return Severity.Info;
+  };
+
+  let currentSev = getEnum(baseSeverity);
+
   // Test files: Be more lenient
   if (context.isTestFile) {
-    if (baseSeverity === 'minor') return 'info';
-    if (baseSeverity === 'major') return 'minor';
+    if (currentSev === Severity.Minor) currentSev = Severity.Info;
+    if (currentSev === Severity.Major) currentSev = Severity.Minor;
   }
 
   // Type definition files: Be more lenient (often use short generic names)
   if (context.isTypeDefinition) {
-    if (baseSeverity === 'minor') return 'info';
+    if (currentSev === Severity.Minor) currentSev = Severity.Info;
   }
 
   // API layer: Be stricter (public interface)
   if (context.codeLayer === 'api') {
-    if (baseSeverity === 'info' && issueType === 'unclear') return 'minor';
-    if (baseSeverity === 'minor' && issueType === 'unclear') return 'major';
+    if (currentSev === Severity.Info && issueType === 'unclear')
+      currentSev = Severity.Minor;
+    if (currentSev === Severity.Minor && issueType === 'unclear')
+      currentSev = Severity.Major;
   }
 
   // High complexity: Be stricter (need clearer names)
   if (context.complexity > 10) {
-    if (baseSeverity === 'info') return 'minor';
+    if (currentSev === Severity.Info) currentSev = Severity.Minor;
   }
 
   // Utility/helper layer: Allow shorter names
   if (context.codeLayer === 'utility') {
-    if (baseSeverity === 'minor' && issueType === 'abbreviation') return 'info';
+    if (currentSev === Severity.Minor && issueType === 'abbreviation')
+      currentSev = Severity.Info;
   }
 
-  return baseSeverity;
+  return currentSev;
 }
 
 /**
