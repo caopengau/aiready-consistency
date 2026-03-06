@@ -32,7 +32,7 @@
 - [x] Provision DynamoDB single table (`aiready-platform`) with GSI1, GSI2, TTL
 - [x] Provision S3 bucket for raw analysis JSON
 - [x] **SES notification system for waitlist/feedback**
-- [ ] Set up EventBridge bus + SQS queues (for async processing)
+- [x] Set up EventBridge bus + SQS queues (for async processing)
 - [ ] Configure CloudWatch monitoring + Sentry
 
 ### Growth & Support

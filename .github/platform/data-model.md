@@ -37,6 +37,7 @@ Note: TTL not yet configured — all records persist until manually deleted.
 | Analysis    | `ANALYSIS#<repoId>` | `<timestamp>`      | `USER#<userId>`                    | `ANALYSIS#<ts>`    | `ANALYSIS#<repoId>`    | `<timestamp>` |
 | Remediation | `REMEDIATION#<id>`  | `#METADATA`        | `USER#<userId>` or `TEAM#<teamId>` | `REMEDIATION#<id>` | `REMEDIATION#<repoId>` | `<createdAt>` |
 | Magic Link  | `MAGICLINK#<token>` | `#METADATA`        | —                                  | —                  | —                      | —             |
+| ApiKey      | `USER#<userId>`     | `APIKEY#<id>`      | `APIKEYS`                          | `<keyHash>`        | —                      | —             |
 
 ---
 
@@ -58,6 +59,7 @@ Note: TTL not yet configured — all records persist until manually deleted.
 | 12  | List remediations for repo            | GSI2 `GSI2PK=REMEDIATION#<repoId>` `ScanIndexForward=false`     |
 | 13  | List remediations for team            | GSI1 `GSI1PK=TEAM#<id>` `GSI1SK begins_with REMEDIATION#`       |
 | 14  | Get magic link token                  | Table `PK=MAGICLINK#<token>` `SK=#METADATA`                     |
+| 15  | Validate API key                      | GSI1 `GSI1PK=APIKEYS` `GSI1SK=<keyHash>`                        |
 
 ---
 
@@ -135,6 +137,9 @@ Note: TTL not yet configured — all records persist until manually deleted.
   "defaultBranch": "main",
   "lastAnalysisAt": "2026-02-22T10:30:00Z",
   "aiScore": 72,
+  "isScanning": false,
+  "lastError": null,
+  "lastCommitHash": "a1b2c3d4",
   "createdAt": "2026-02-22T10:00:00Z",
   "updatedAt": "2026-02-22T10:30:00Z"
 }
@@ -155,11 +160,22 @@ Note: TTL not yet configured — all records persist until manually deleted.
   "userId": "a1b2c3d4",
   "timestamp": "2026-02-22T10:30:00.000Z",
   "aiScore": 72,
+  "status": "completed",
   "breakdown": {
     "semanticDuplicates": 65,
     "contextFragmentation": 78,
     "namingConsistency": 80,
-    "documentationHealth": 55
+    "documentationHealth": 55,
+    "dependencyHealth": 88,
+    "aiSignalClarity": 85,
+    "agentGrounding": 90,
+    "testabilityIndex": 80,
+    "changeAmplification": 72,
+    "cognitiveLoad": 68,
+    "patternEntropy": 45,
+    "conceptCohesion": 82,
+    "docDrift": 30,
+    "semanticDistance": 85
   },
   "rawKey": "analyses/a1b2c3d4/r1e2p3o4/2026-02-22T10:30:00.000Z.json",
   "summary": {
@@ -169,6 +185,63 @@ Note: TTL not yet configured — all records persist until manually deleted.
     "warnings": 15
   },
   "createdAt": "2026-02-22T10:30:00Z"
+}
+```
+
+### Remediation Request
+
+```json
+{
+  "PK": "REMEDIATION#re1m2e3d4",
+  "SK": "#METADATA",
+  "GSI1PK": "USER#a1b2c3d4",
+  "GSI1SK": "REMEDIATION#re1m2e3d4",
+  "GSI2PK": "REMEDIATION#r1e2p3o4",
+  "GSI2SK": "2026-02-22T10:35:00Z",
+  "id": "re1m2e3d4",
+  "repoId": "r1e2p3o4",
+  "userId": "a1b2c3d4",
+  "type": "consolidation",
+  "risk": "medium",
+  "status": "pending",
+  "title": "Consolidate duplicate API handlers",
+  "description": "...",
+  "affectedFiles": ["src/api/users.ts", "src/api/auth.ts"],
+  "estimatedSavings": 3200,
+  "createdAt": "2026-02-22T10:35:00Z",
+  "updatedAt": "2026-02-22T10:35:00Z"
+}
+```
+
+### Magic Link Token
+
+```json
+{
+  "PK": "MAGICLINK#abc123xyz",
+  "SK": "#METADATA",
+  "token": "abc123xyz",
+  "email": "jane@example.com",
+  "expiresAt": "2026-02-22T10:30:00Z",
+  "used": false,
+  "createdAt": "2026-02-22T10:00:00Z"
+}
+```
+
+### ApiKey
+
+```json
+{
+  "PK": "USER#a1b2c3d4",
+  "SK": "APIKEY#ak123",
+  "GSI1PK": "APIKEYS",
+  "GSI1SK": "sha256_hash_of_key",
+  "id": "ak123",
+  "userId": "a1b2c3d4",
+  "name": "CLI Key",
+  "keyHash": "sha256_hash_of_key",
+  "prefix": "ar_",
+  "createdAt": "2026-02-22T10:00:00Z",
+  "lastUsedAt": "2026-02-22T10:30:00Z"
 }
 ```
 

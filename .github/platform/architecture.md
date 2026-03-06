@@ -106,7 +106,7 @@ interface Team {
   id: string;
   name: string;
   slug: string;
-  plan: 'free' | 'pro' | 'enterprise';
+  plan: 'free' | 'pro' | 'team' | 'enterprise';
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   memberCount: number;
@@ -118,13 +118,16 @@ interface Team {
 interface Repository {
   id: string;
   teamId?: string;
-  userId: string; // owner (individuals don't need a team)
+  userId: string;
   name: string;
   url: string;
   description?: string;
   defaultBranch: string;
   lastAnalysisAt?: string;
-  aiScore?: number; // cached from latest analysis
+  aiScore?: number;
+  isScanning?: boolean;
+  lastError?: string;
+  lastCommitHash?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -135,13 +138,24 @@ interface Analysis {
   userId: string;
   timestamp: string;
   aiScore: number;
+  status: 'processing' | 'completed' | 'failed';
   breakdown: {
-    semanticDuplicates: number; // 0-100
-    contextFragmentation: number;
-    namingConsistency: number;
-    documentationHealth: number;
+    semanticDuplicates?: number;
+    contextFragmentation?: number;
+    namingConsistency?: number;
+    documentationHealth?: number;
+    dependencyHealth?: number;
+    aiSignalClarity?: number;
+    agentGrounding?: number;
+    testabilityIndex?: number;
+    changeAmplification?: number;
+    cognitiveLoad?: number;
+    patternEntropy?: number;
+    conceptCohesion?: number;
+    docDrift?: number;
+    semanticDistance?: number;
   };
-  rawKey: string; // S3 object key
+  rawKey: string;
   summary: {
     totalFiles: number;
     totalIssues: number;
@@ -149,6 +163,16 @@ interface Analysis {
     warnings: number;
   };
   createdAt: string;
+}
+
+interface ApiKey {
+  id: string;
+  userId: string;
+  name: string;
+  keyHash: string;
+  prefix: string;
+  createdAt: string;
+  lastUsedAt?: string;
 }
 
 interface RemediationRequest {

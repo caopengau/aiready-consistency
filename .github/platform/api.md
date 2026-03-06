@@ -6,7 +6,10 @@
 
 ## Authentication
 
-All endpoints (except NextAuth handler and Stripe webhook) require a valid NextAuth session cookie. No `Authorization: Bearer` header — session is cookie-based via NextAuth v5.
+AIReady Platform supports two authentication methods:
+
+1. **Session-based (Web):** Used by the dashboard. Handled via NextAuth v5 session cookies.
+2. **Token-based (CLI/API):** Used by the CLI and external integrations. Uses `Authorization: Bearer <API_KEY>` header.
 
 Unauthenticated requests return `401 Unauthorized`.
 
@@ -14,48 +17,14 @@ Unauthenticated requests return `401 Unauthorized`.
 
 ## Auth Endpoints (NextAuth v5)
 
-| Route                     | Method   | Description                                                    |
-| ------------------------- | -------- | -------------------------------------------------------------- |
-| `/api/auth/[...nextauth]` | GET/POST | NextAuth catch-all (OAuth callbacks, signIn, signOut, session) |
-| `/api/auth/register`      | POST     | Create new account (email + password)                          |
-| `/api/auth/magic-link`    | POST     | Request magic link email via SES                               |
-| `/api/auth/verify`        | POST     | Verify magic link token, returns user for signIn() call        |
-
-### `POST /api/auth/register`
-
-```typescript
-// Request
-{ "email": "jane@example.com", "password": "strongpass123", "name": "Jane" }
-
-// Response 201
-{ "success": true, "message": "Account created. Please sign in." }
-
-// Error 409 if email taken
-{ "error": "Email already exists" }
-```
-
-### `POST /api/auth/magic-link`
-
-```typescript
-// Request
-{ "email": "jane@example.com" }
-
-// Response 200
-{ "success": true, "message": "Magic link sent if account exists" }
-```
-
-### `POST /api/auth/verify`
-
-```typescript
-// Request
-{ "token": "abc123xyz" }
-
-// Response 200
-{ "email": "jane@example.com", "name": "Jane" }
-
-// Error 400 if token invalid/expired/used
-{ "error": "Invalid or expired token" }
-```
+| Route                     | Method   | Auth | Description                                                    |
+| ------------------------- | -------- | ---- | -------------------------------------------------------------- |
+| `/api/auth/[...nextauth]` | GET/POST | ❌    | NextAuth catch-all (OAuth callbacks, signIn, signOut, session) |
+| `/api/auth/register`      | POST     | ❌    | Create new account (email + password)                          |
+| `/api/auth/magic-link`    | POST     | ❌    | Request magic link email via SES                               |
+| `/api/auth/verify`        | POST     | ❌    | Verify magic link token, returns user for signIn() call        |
+| `/api/auth/keys`          | GET      | ✅    | List user's API keys (Browser only)                            |
+| `/api/auth/keys`          | POST     | ✅    | Create a new API key (Browser only)                            |
 
 ---
 
@@ -69,6 +38,8 @@ Unauthenticated requests return `401 Unauthorized`.
 
 ### `GET /api/repos`
 
+Supports both session and API key auth.
+
 ```typescript
 // Response 200
 {
@@ -79,9 +50,15 @@ Unauthenticated requests return `401 Unauthorized`.
       "url": "https://github.com/acme/my-project",
       "aiScore": 72,
       "lastAnalysisAt": "2026-02-22T10:30:00Z",
+      "isScanning": false,
       "createdAt": "2026-02-22T10:00:00Z"
     }
-  ]
+  ],
+  "limits": {
+    "maxRepos": 3,
+    "currentCount": 1,
+    "remaining": 2
+  }
 }
 ```
 
@@ -92,16 +69,10 @@ Unauthenticated requests return `401 Unauthorized`.
 { "name": "my-project", "url": "https://github.com/acme/my-project" }
 
 // Response 201
-{ "repo": { "id": "r1e2p3o4", "name": "my-project", ... } }
-```
-
-### `DELETE /api/repos`
-
-```typescript
-// Request (query param or body)
-?repoId=r1e2p3o4
-
-// Response 204
+{ 
+  "repo": { "id": "r1e2p3o4", "name": "my-project", ... },
+  "reposRemaining": 2
+}
 ```
 
 ---
@@ -114,32 +85,19 @@ Unauthenticated requests return `401 Unauthorized`.
 
 ### `POST /api/analysis/upload`
 
-Validates repo ownership, stores raw JSON to S3, creates Analysis DDB record, updates repo `aiScore` and `lastAnalysisAt`.
+Validates repo ownership (via repoId or inferred from Git URL in payload), stores raw JSON to S3, creates Analysis record (status: processing), and triggers async processing.
 
 ```typescript
 // Request
 {
-  "repoId": "r1e2p3o4",
-  "timestamp": "2026-02-22T10:30:00.000Z",
-  "aiScore": 72,
-  "breakdown": {
-    "cognitiveLoad": 72,
-    "aiSignalClarity": 85,
-    "agentGrounding": 90,
-    "patternEntropy": 65,
-    "conceptCohesion": 78,
-    "testabilityIndex": 80,
-    "docDrift": 55,
-    "dependencyHealth": 88,
-    "semanticDistance": 92
-  },
-  "summary": {
-    "totalFiles": 42,
-    "totalIssues": 18,
-    "criticalIssues": 3,
-    "warnings": 15
-  },
-  "rawData": { /* full CLI output */ }
+  "repoId": "r1e2p3o4", // optional if URL is in data
+  "data": { 
+    "metadata": {
+      "repository": "https://github.com/acme/my-project",
+      "timestamp": "2026-02-22T10:30:00.000Z"
+    },
+    /* ... rest of CLI output ... */ 
+  }
 }
 
 // Response 201
@@ -148,11 +106,18 @@ Validates repo ownership, stores raw JSON to S3, creates Analysis DDB record, up
     "id": "an1a2l3y4",
     "repoId": "r1e2p3o4",
     "timestamp": "2026-02-22T10:30:00.000Z",
-    "aiScore": 72,
+    "status": "processing",
     "rawKey": "analyses/a1b2c3d4/r1e2p3o4/2026-02-22T10:30:00.000Z.json"
+  },
+  "message": "Analysis uploaded. Processing metrics...",
+  "limits": {
+    "runsRemaining": 9,
+    "maxRunsPerMonth": 10,
+    "resetDate": "2026-03-01T00:00:00Z"
   }
 }
 ```
+
 
 ---
 
