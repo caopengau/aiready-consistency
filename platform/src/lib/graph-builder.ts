@@ -208,22 +208,61 @@ export class GraphBuilder {
     };
 
     // 1. Semantic Duplicates
-    // Like contextAnalyzer, we prefer rawOutput.patternDetect.results which has file1/file2/similarity.
-    // breakdown.semanticDuplicates.details are normalized message strings — no pair data.
+    // rawOutput.patternDetect.results is a per-file array where:
+    //   - each item has { fileName, issues: [{ message: "... similar to /path/to/file.ts ...", severity }] }
+    // For uploaded reports, patternData.duplicates may have { file1, file2, similarity }
     const patternData = raw.patternDetect || raw.patterns || {};
-    const dupDetails =
-      (Array.isArray(patternData.results) ? patternData.results : []).length > 0
-        ? patternData.results
-        : patternData.duplicates ||
-          breakdown.semanticDuplicates?.details ||
-          raw.duplicates ||
-          [];
-    dupDetails.forEach((dup: any) => {
-      // Support both raw DuplicatePattern and AnalysisResult with issues
-      const f1 = dup.file1 || dup.fileName || dup.file || dup.location?.file;
-      const f2 = dup.file2;
+    const patternResults: any[] = Array.isArray(patternData.results)
+      ? patternData.results
+      : [];
+    const legacyDups: any[] = patternData.duplicates || [];
 
-      // Calculate severity for the duplicate itself if it's a raw pattern
+    // Regex to extract the target file path from the issue message
+    // e.g. "utility pattern 100% similar to /tmp/repo-xxx/path/to/file.ts (107 tokens wasted)"
+    // or "similar to packages/foo/bar.ts"
+    const similarToRegex = /similar to ([^\s(]+\.[a-zA-Z0-9]+)/i;
+
+    // Process per-file results from rawOutput
+    patternResults.forEach((item: any) => {
+      const f1 = item.fileName || item.file;
+      if (!f1) return;
+
+      processFileNode(f1, 'Semantic Duplicate', 8);
+      const cleanF1 = builder.cleanPath(f1);
+      if (!fileIssues.has(cleanF1))
+        fileIssues.set(cleanF1, { count: 0, maxSeverity: null, duplicates: 0 });
+
+      if (Array.isArray(item.issues)) {
+        item.issues.forEach((issue: any) => {
+          const sev = rankSeverity(issue.severity);
+          bumpIssue(f1, sev);
+          fileIssues.get(cleanF1)!.duplicates += 1;
+
+          // Extract paired file from message and create similarity edge
+          const msg = issue.message || '';
+          const match = msg.match(similarToRegex);
+          if (match) {
+            const f2 = match[1];
+            processFileNode(f2, 'Semantic Duplicate', 8);
+            const cleanF2 = builder.cleanPath(f2);
+            if (!fileIssues.has(cleanF2))
+              fileIssues.set(cleanF2, {
+                count: 0,
+                maxSeverity: null,
+                duplicates: 0,
+              });
+            fileIssues.get(cleanF2)!.duplicates += 1;
+            bumpIssue(f2, sev);
+            builder.addEdge(f1, f2, 'similarity');
+          }
+        });
+      }
+    });
+
+    // Process legacy file1/file2 pair format (uploaded reports)
+    legacyDups.forEach((dup: any) => {
+      const f1 = dup.file1 || dup.fileName || dup.file;
+      const f2 = dup.file2;
       const dupSev: IssueSeverity | null = dup.severity
         ? rankSeverity(dup.severity)
         : dup.similarity
@@ -235,7 +274,7 @@ export class GraphBuilder {
           : null;
 
       if (f1) {
-        processFileNode(f1, 'Semantic Pattern', 8);
+        processFileNode(f1, 'Semantic Duplicate', 8);
         const cleanF1 = builder.cleanPath(f1);
         if (!fileIssues.has(cleanF1))
           fileIssues.set(cleanF1, {
@@ -244,18 +283,10 @@ export class GraphBuilder {
             duplicates: 0,
           });
         fileIssues.get(cleanF1)!.duplicates += 1;
-
-        if (Array.isArray(dup.issues)) {
-          dup.issues.forEach((issue: any) =>
-            bumpIssue(f1, rankSeverity(issue.severity))
-          );
-        } else {
-          bumpIssue(f1, dupSev);
-        }
+        bumpIssue(f1, dupSev);
       }
-
       if (f2) {
-        processFileNode(f2, 'Semantic Pattern', 8);
+        processFileNode(f2, 'Semantic Duplicate', 8);
         const cleanF2 = builder.cleanPath(f2);
         if (!fileIssues.has(cleanF2))
           fileIssues.set(cleanF2, {
@@ -264,10 +295,7 @@ export class GraphBuilder {
             duplicates: 0,
           });
         fileIssues.get(cleanF2)!.duplicates += 1;
-
-        // For f2, we only bump the duplicate issue itself
         bumpIssue(f2, dupSev);
-
         if (f1) builder.addEdge(f1, f2, 'similarity');
       }
     });
