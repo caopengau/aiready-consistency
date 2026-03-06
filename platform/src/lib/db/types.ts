@@ -1,4 +1,5 @@
 // Types for DynamoDB entities
+import { AnalysisStatus, Severity } from '@aiready/core';
 
 export interface User {
   id: string;
@@ -60,7 +61,7 @@ export interface Analysis {
   userId: string;
   timestamp: string;
   aiScore: number;
-  status: 'processing' | 'completed' | 'failed';
+  status: AnalysisStatus | 'processing' | 'completed' | 'failed';
   breakdown: {
     semanticDuplicates?: number;
     contextFragmentation?: number;
@@ -95,7 +96,7 @@ export interface RemediationRequest {
   teamId?: string;
   userId: string;
   type: 'consolidation' | 'rename' | 'restructure' | 'refactor';
-  risk: 'low' | 'medium' | 'high' | 'critical';
+  risk: Severity | 'low' | 'medium' | 'high' | 'critical';
   status: 'pending' | 'reviewing' | 'approved' | 'rejected' | 'completed';
   title: string;
   description: string;

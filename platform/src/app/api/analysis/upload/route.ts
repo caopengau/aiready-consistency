@@ -19,6 +19,7 @@ import {
 import { planLimits } from '@/lib/plans';
 import { sendAnalysisCompleteEmail } from '@/lib/email';
 import { randomUUID } from 'crypto';
+import { UnifiedReportSchema, AnalysisStatus } from '@aiready/core';
 
 // Helper to count runs this month
 async function getRunsThisMonth(userId: string): Promise<number> {
@@ -90,6 +91,20 @@ export async function POST(request: NextRequest) {
 
     // Normalize data from CLI format if needed
     const data = normalizeReport(rawData);
+
+    // Validate report with Zod schema (Tightening Contract)
+    const validationResult = UnifiedReportSchema.safeParse(data);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid analysis data format',
+          details: validationResult.error.issues.map(
+            (e) => `${e.path.join('.')}: ${e.message}`
+          ),
+        },
+        { status: 400 }
+      );
+    }
 
     let targetRepoId = repoId;
 
@@ -187,7 +202,7 @@ export async function POST(request: NextRequest) {
       breakdown: {}, // Will be updated by worker
       rawKey,
       summary: extractSummary(data),
-      status: 'processing', // Add status field
+      status: AnalysisStatus.Processing,
       createdAt: new Date().toISOString(),
     });
 
