@@ -115,6 +115,10 @@ export const MetricsSchema = z.object({
   estimatedMonthlyCost: z.number().optional(),
   estimatedDeveloperHours: z.number().optional(),
   comprehensionDifficultyIndex: z.number().optional(),
+
+  // Extended metrics for specific spokes
+  totalSymbols: z.number().optional(),
+  totalExports: z.number().optional(),
 });
 
 export type Metrics = z.infer<typeof MetricsSchema>;
