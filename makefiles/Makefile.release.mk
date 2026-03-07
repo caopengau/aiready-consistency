@@ -17,6 +17,15 @@
 #   make release-one SPOKE=core TYPE=patch
 #   make release-all TYPE=minor
 #   make release-status
+
+# Internal helper for parallel publishing (called by release-all)
+.PHONY: release-spoke-%
+release-spoke-%:
+	@$(call log_info,Releasing spoke @aiready/$*...); \
+	$(MAKE) npm-publish SPOKE=$* || exit 1; \
+	$(MAKE) publish SPOKE=$* OWNER=$(OWNER) || exit 1; \
+	$(call log_success,Released @aiready/$*)
+
 #
 # Notes:
 # - Always uses pnpm for publish to resolve workspace:* dependencies
@@ -318,17 +327,22 @@ release-all: ## Release all spokes: TYPE=patch|minor|major (excludes landing)
 		$(call log_error,Tests failed. Aborting release-all.); \
 		exit 1; \
 	}; \
-	$(call log_step,Phase 2.1: Running Tier 2 Integration Tests...); \
+	$(call log_step,Phase 2.1: Running explicit Spoke-to-Hub Contract Tests...); \
+	$(MAKE) -C $(ROOT_DIR) test-contract || { \
+		$(call log_error,Contract tests failed. Aborting release-all.); \
+		exit 1; \
+	}; \
+	$(call log_step,Phase 2.2: Running Tier 2 Integration Tests...); \
 	$(MAKE) -C $(ROOT_DIR) test-integration || { \
 		$(call log_error,Integration tests failed. Aborting release-all.); \
 		exit 1; \
 	}; \
-	$(call log_step,Phase 2.2: Running Tier 3 Local E2E Tests...); \
+	$(call log_step,Phase 2.3: Running Tier 3 Local E2E Tests...); \
 	$(MAKE) -C $(ROOT_DIR) test-platform-e2e-local || { \
 		$(call log_error,Platform E2E tests failed locally. Aborting release-all.); \
 		exit 1; \
 	}; \
-	@$(call log_success,All 3 Tiers of contract testing passed); \
+	@$(call log_success,All Tiers of contract and integration testing passed); \
 	$(call log_step,Phase 2.5: Performing final CLI smoke test...); \
 	$(MAKE) -C $(ROOT_DIR) test-verify-cli || { \
 		$(call log_error,CLI smoke test failed. Aborting release-all.); \
@@ -357,13 +371,8 @@ release-all: ## Release all spokes: TYPE=patch|minor|major (excludes landing)
 	$(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$(CORE_SPOKE) || exit 1; \
 	$(MAKE) -C $(ROOT_DIR) publish SPOKE=$(CORE_SPOKE) OWNER=$(OWNER) || exit 1; \
 	$(call log_success,Published @aiready/$(CORE_SPOKE)); \
-	$(call log_step,Phase 6: Publishing middle spokes...); \
-	for spoke in $(MIDDLE_SPOKES); do \
-		$(call log_info,Publishing @aiready/$$spoke...); \
-		$(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$$spoke || exit 1; \
-		$(MAKE) -C $(ROOT_DIR) publish SPOKE=$$spoke OWNER=$(OWNER) || exit 1; \
-		$(call log_success,Published @aiready/$$spoke); \
-	done; \
+	$(call log_step,Phase 6: Publishing middle spokes in parallel...); \
+	$(MAKE) $(MAKE_PARALLEL) $(addprefix release-spoke-,$(MIDDLE_SPOKES)) || exit 1; \
 	$(call log_step,Phase 7: Publishing CLI last...); \
 	$(MAKE) -C $(ROOT_DIR) npm-publish SPOKE=$(CLI_SPOKE) || exit 1; \
 	$(MAKE) -C $(ROOT_DIR) publish SPOKE=$(CLI_SPOKE) OWNER=$(OWNER) || exit 1; \

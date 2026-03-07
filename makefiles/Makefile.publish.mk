@@ -339,38 +339,33 @@ sync: ## Push monorepo to origin and sync all spokes to their public repos. Use 
 	@$(call log_step,Pushing to monorepo...)
 	@git push origin $(TARGET_BRANCH)
 	@$(call log_success,Pushed to monorepo)
-	@$(call log_step,Syncing relevant repositories...)
-	@synced_count=0; \
-	for spoke in $(ALL_SPOKES); do \
-		if [ -f "$(REPO_ROOT)/packages/$$spoke/package.json" ]; then \
-			should_sync=false; \
-			if [ "$$CHANGED_FILES" = "FORCE_ALL" ]; then \
-				should_sync=true; \
-			elif echo "$$CHANGED_FILES" | grep -q "packages/$$spoke/"; then \
-				should_sync=true; \
-			fi; \
-			if [ "$$should_sync" = "true" ]; then \
-				$(call log_info,Syncing $$spoke...); \
-				$(MAKE) publish SPOKE=$$spoke OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR|Synced|tag pushed)' || true; \
-				synced_count=$$((synced_count + 1)); \
-			fi; \
+	@$(call log_step,Syncing relevant repositories in parallel...)
+	@$(MAKE) $(MAKE_PARALLEL) $(addprefix github-sync-spoke-,$(ALL_SPOKES)) github-sync-landing CHANGED_FILES="$$CHANGED_FILES" FORCE="$(FORCE)"
+	@$(call log_success,Sync process completed)
+
+.PHONY: github-sync-spoke-%
+github-sync-spoke-%:
+	@if [ -f "$(REPO_ROOT)/packages/$*/package.json" ]; then \
+		should_sync=false; \
+		if [ "$(FORCE)" = "true" ] || [ "$(CHANGED_FILES)" = "FORCE_ALL" ] || echo "$(CHANGED_FILES)" | grep -q "packages/$*/"; then \
+			should_sync=true; \
 		fi; \
-	done; \
-	should_sync_landing=false; \
-	if [ "$$CHANGED_FILES" = "FORCE_ALL" ]; then \
-		should_sync_landing=true; \
-	elif echo "$$CHANGED_FILES" | grep -q "landing/"; then \
-		should_sync_landing=true; \
+		if [ "$$should_sync" = "true" ]; then \
+			$(call log_info,Syncing $*...); \
+			$(MAKE) publish SPOKE=$* OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR|Synced|tag pushed)' || true; \
+		fi; \
+	fi
+
+.PHONY: github-sync-landing
+github-sync-landing:
+	@should_sync=false; \
+	if [ "$(FORCE)" = "true" ] || [ "$(CHANGED_FILES)" = "FORCE_ALL" ] || echo "$(CHANGED_FILES)" | grep -q "landing/"; then \
+		should_sync=true; \
 	fi; \
-	if [ "$$should_sync_landing" = "true" ]; then \
+	if [ "$$should_sync" = "true" ]; then \
 		$(call log_step,Syncing landing page repository...); \
 		$(MAKE) publish-landing OWNER=$(OWNER) 2>&1 | grep -E '(SUCCESS|ERROR|Synced|tag pushed)' || true; \
-		synced_count=$$((synced_count + 1)); \
-	fi; \
-	if [ $$synced_count -eq 0 ] && [ "$$CHANGED_FILES" != "FORCE_ALL" ] && [ -n "$$CHANGED_FILES" ]; then \
-		$(call log_info,Changes detected but no spoke or landing repo matches. Skipping spoke sync.); \
-	fi; \
-	$(call log_success,Sync process completed ($$synced_count repos synced))
+	fi
 
 deploy: sync ## Alias for sync (push monorepo + publish all spokes)
 	@:-pattern-detect ## Build and publish all packages to npm
