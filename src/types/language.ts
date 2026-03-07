@@ -167,6 +167,11 @@ export interface LanguageParser {
   getNamingConventions(): NamingConvention;
 
   /**
+   * Initialize the parser (e.g. load WASM)
+   */
+  initialize(): Promise<void>;
+
+  /**
    * Check if this parser can handle a file
    * @param filePath - File path to check
    */

@@ -19,6 +19,11 @@ export class TypeScriptParser implements LanguageParser {
   readonly language = Language.TypeScript;
   readonly extensions = ['.ts', '.tsx', '.js', '.jsx'];
 
+  async initialize(): Promise<void> {
+    // No-op for TypeScript parser (for now)
+    return Promise.resolve();
+  }
+
   parse(code: string, filePath: string): ParseResult {
     try {
       const isJavaScript = filePath.match(/\.jsx?$/i);

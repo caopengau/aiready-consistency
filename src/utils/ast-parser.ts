@@ -1,5 +1,6 @@
-import { parse } from '@typescript-eslint/typescript-estree';
-import type { TSESTree } from '@typescript-eslint/typescript-estree';
+import { parse, TSESTree } from '@typescript-eslint/typescript-estree';
+import { getParser } from '../parsers/parser-factory';
+import { Language } from '../types/language';
 
 export interface ExportWithImports {
   name: string;
@@ -29,6 +30,39 @@ export function parseFileExports(
   exports: ExportWithImports[];
   imports: FileImport[];
 } {
+  const parser = getParser(filePath);
+
+  // Use professional multi-language parser if it's not TypeScript
+  // (We keep the legacy TS/JS parser logic below for now as it has specific dependency extraction)
+  if (parser && parser.language === Language.Python) {
+    try {
+      const result = parser.parse(code, filePath);
+      return {
+        exports: result.exports.map((e) => ({
+          name: e.name,
+          type: e.type as any,
+          imports: e.imports || [],
+          dependencies: e.dependencies || [],
+          typeReferences: e.typeReferences || [],
+          loc: e.loc
+            ? {
+                start: { line: e.loc.start.line, column: e.loc.start.column },
+                end: { line: e.loc.end.line, column: e.loc.end.column },
+              }
+            : undefined,
+        })),
+        imports: result.imports.map((i) => ({
+          source: i.source,
+          specifiers: i.specifiers,
+          isTypeOnly: i.isTypeOnly || false,
+        })),
+      };
+    } catch (e) {
+      // Fallback
+      return { exports: [], imports: [] };
+    }
+  }
+
   try {
     const ast = parse(code, {
       loc: true,

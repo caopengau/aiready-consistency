@@ -122,6 +122,16 @@ export class ParserFactory {
   public static reset(): void {
     ParserFactory.instance = new ParserFactory();
   }
+
+  /**
+   * Initialize all registered parsers
+   */
+  public async initializeAll(): Promise<void> {
+    const promises = Array.from(this.parsers.values()).map((p) =>
+      p.initialize()
+    );
+    await Promise.all(promises);
+  }
 }
 
 /**
@@ -129,6 +139,13 @@ export class ParserFactory {
  */
 export function getParser(filePath: string): LanguageParser | null {
   return ParserFactory.getInstance().getParserForFile(filePath);
+}
+
+/**
+ * Initialize all parsers
+ */
+export async function initializeParsers(): Promise<void> {
+  await ParserFactory.getInstance().initializeAll();
 }
 
 /**
