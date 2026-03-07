@@ -46,9 +46,12 @@ export function calculateChangeAmplification(params: {
   // Subtract based on log of avg amplification to not penalize small increases too heavily
   // Subtract based on max amplification hotspots exceeding threshold
   const avgPenalty = Math.log2(avgAmplification + 1) * 15;
-  const maxPenalty = maxAmplification > 30 ? (maxAmplification - 30) * 1.5 : 0;
+  // Use a logarithmic penalty for max amplification to avoid 100+ point drops
+  const maxPenalty =
+    maxAmplification > 30 ? Math.log10(maxAmplification - 29) * 30 : 0;
 
-  const score = Math.max(0, Math.min(100, 100 - avgPenalty - maxPenalty));
+  // Ensure a score floor of 5 so it's never 0
+  const score = Math.max(5, Math.min(100, 100 - avgPenalty - maxPenalty));
 
   let rating: ChangeAmplificationScore['rating'] = 'isolated';
   if (score < 40) rating = 'explosive';

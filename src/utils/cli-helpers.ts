@@ -131,6 +131,24 @@ export function getSafetyIcon(rating: string): string {
 }
 
 /**
+ * Emit progress update with throttling to reduce log noise
+ */
+export function emitProgress(
+  processed: number,
+  total: number,
+  toolId: string,
+  message: string,
+  onProgress?: (processed: number, total: number, message: string) => void,
+  throttleCount: number = 50
+): void {
+  if (!onProgress) return;
+
+  if (processed % throttleCount === 0 || processed === total) {
+    onProgress(processed, total, `${message} (${processed}/${total})`);
+  }
+}
+
+/**
  * Get chalk color function for a given severity
  * @param severity severity level
  * @param chalk chalk instance
