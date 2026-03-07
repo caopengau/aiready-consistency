@@ -1,7 +1,2 @@
-export {
-  ScoreBar,
-  ScoreCard,
-  type ScoreBarProps,
-  type ScoreCardProps,
-  type ScoreRating,
-} from './ScoreBar';
+export * from './ScoreBar';
+export * from './ScoreCircle';

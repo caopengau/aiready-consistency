@@ -75,6 +75,45 @@ const CardFooter = React.forwardRef<
 ));
 CardFooter.displayName = 'CardFooter';
 
+// GlassCard - Highly polished platform style
+const GlassCard = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'rounded-2xl border border-indigo-500/20 bg-slate-900/40 backdrop-blur-md shadow-xl transition-all hover:border-indigo-500/30',
+      className
+    )}
+    {...props}
+  />
+));
+GlassCard.displayName = 'GlassCard';
+
+const GlassCardHeader = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'flex flex-col space-y-1.5 p-6 border-b border-indigo-500/10',
+      className
+    )}
+    {...props}
+  />
+));
+GlassCardHeader.displayName = 'GlassCardHeader';
+
+const GlassCardContent = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn('p-6', className)} {...props} />
+));
+GlassCardContent.displayName = 'GlassCardContent';
+
 export {
   Card,
   CardHeader,
@@ -82,4 +121,7 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  GlassCard,
+  GlassCardHeader,
+  GlassCardContent,
 };

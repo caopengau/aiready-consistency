@@ -1,69 +1,43 @@
 'use client';
 
-import React from 'react';
+import { motion } from 'framer-motion';
 import { cn } from '../utils/cn';
 
 export interface BreadcrumbItem {
   label: string;
-  href?: string;
+  href: string;
 }
 
 export interface BreadcrumbProps {
   items: BreadcrumbItem[];
-  separator?: React.ReactNode;
   className?: string;
 }
 
-const DefaultSeparator = () => (
-  <svg
-    className="h-4 w-4 text-slate-400"
-    fill="none"
-    viewBox="0 0 24 24"
-    strokeWidth="1.5"
-    stroke="currentColor"
-  >
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      d="M8.25 4.5l7.5 7.5-7.5 7.5"
-    />
-  </svg>
-);
-
-export function Breadcrumb({ items, separator, className }: BreadcrumbProps) {
-  const Separator = separator || <DefaultSeparator />;
-
+export function Breadcrumb({ items, className }: BreadcrumbProps) {
   return (
-    <nav
-      className={cn('flex items-center gap-1 text-sm', className)}
-      aria-label="Breadcrumb"
-    >
-      <ol className="flex items-center gap-1">
-        {items.map((item, index) => {
-          const isLast = index === items.length - 1;
-
-          return (
-            <li key={index} className="flex items-center gap-1">
-              {index > 0 && <span className="flex-shrink-0">{Separator}</span>}
-              {item.href && !isLast ? (
-                <a
-                  href={item.href}
-                  className="text-slate-600 hover:text-slate-900 transition-colors"
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <span
-                  className={
-                    isLast ? 'font-medium text-slate-900' : 'text-slate-600'
-                  }
-                >
-                  {item.label}
-                </span>
-              )}
-            </li>
-          );
-        })}
+    <nav aria-label="Breadcrumb" className={cn('mb-8', className)}>
+      <ol className="flex items-center gap-2 text-sm">
+        {items.map((item, index) => (
+          <motion.li
+            key={item.href}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="flex items-center gap-2"
+          >
+            {index > 0 && <span className="text-slate-600">/</span>}
+            {index === items.length - 1 ? (
+              <span className="text-cyan-400 font-medium">{item.label}</span>
+            ) : (
+              <a
+                href={item.href}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                {item.label}
+              </a>
+            )}
+          </motion.li>
+        ))}
       </ol>
     </nav>
   );

@@ -7,10 +7,15 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  GlassCard,
+  GlassCardHeader,
+  GlassCardContent,
 } from './components/card';
 export { Input, type InputProps } from './components/input';
 export { Label, type LabelProps } from './components/label';
 export { Badge, badgeVariants, type BadgeProps } from './components/badge';
+export { Modal, type ModalProps } from './components/modal';
+export * from './components/icons';
 
 // Layout Components
 export { Container, type ContainerProps } from './components/container';

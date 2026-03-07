@@ -46,6 +46,18 @@ AI-native development should be measured, not guessed.
 - One concrete metric or example per post
 - Actionable CTA: try guided onboarding or read blog
 
+## Hashtag Strategy (Expanded)
+
+Use 5-6 hashtags per post for broader discovery without looking spammy.
+
+- 1-2 broad tags: `#AI`, `#SoftwareEngineering`, `#DeveloperTools`
+- 2-3 niche tags tied to the post angle: `#CodeQuality`, `#Refactoring`, `#SoftwareArchitecture`, `#CodebaseHealth`, `#AIAssistedDevelopment`
+- 1 community/role tag: `#EngineeringLeadership`, `#DeveloperExperience`, `#BuildInPublic`, `#DeveloperCommunity`
+- Keep tags relevant to the post topic and rotate combinations to avoid repetition fatigue
+
+**Hashtag Bank (mix and rotate):**
+`#AI #AIEngineering #AIAssistedDevelopment #AgenticAI #DeveloperTools #DevTools #SoftwareEngineering #SoftwareArchitecture #ModularArchitecture #CodeQuality #CodebaseHealth #Refactoring #TechDebt #TechnicalDebt #DeveloperProductivity #DeveloperExperience #EngineeringLeadership #EngineeringManagement #CodeReview #HumanInTheLoop #ResponsibleAI #BuildInPublic #FounderJourney #IndieHackers #DeveloperCommunity #OpenSource #WorkflowAutomation #AIAutomation #PromptEngineering #ProductEngineering #StartupEngineering #TechLeadership #AIPoll`
+
 ---
 
 ## Posting Framework (Every Post)
@@ -192,7 +204,7 @@ Every Sunday, review the past week and adjust:
 
 **Owner:** Peng Cao  
 **Project:** AIReady thought leadership + community growth  
-**Last Updated:** 2026-02-24
+**Last Updated:** 2026-03-07
 
 ---
 
@@ -219,7 +231,7 @@ Try the guided start: <https://getaiready.dev?utm_source=linkedin&utm_medium=soc
 
 What’s one quality signal your team wishes you could measure better?
 
-# AI #DeveloperTools #CodeQuality
+# AI #DeveloperTools #CodeQuality #SoftwareEngineering #EngineeringLeadership #AIAssistedDevelopment
 
 ---
 
@@ -238,7 +250,7 @@ Human-in-the-loop is mission critical: AI drafts fast, humans choose the standar
 
 Have you seen this in validation/auth code?
 
-# AIEngineering #Refactoring #CodeQuality
+# AIEngineering #Refactoring #CodeQuality #SoftwareArchitecture #CodebaseHealth #DevTools
 
 ---
 
@@ -254,7 +266,7 @@ Try the guided flow: <https://getaiready.dev?utm_source=linkedin&utm_medium=soci
 
 Where in your codebase would collapsing one domain save the most time?
 
-# SoftwareEngineering #AI #TechDebt
+# SoftwareEngineering #AI #TechDebt #CodeQuality #ModularArchitecture #DeveloperProductivity
 
 ---
 
@@ -274,7 +286,7 @@ Start here: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_ca
 
 What review guardrail has saved your team most often?
 
-# HumanInTheLoop #AI #EngineeringLeadership
+# HumanInTheLoop #AI #EngineeringLeadership #CodeReview #SoftwareArchitecture #ResponsibleAI
 
 ---
 
@@ -293,7 +305,7 @@ Tools + guided start: <https://getaiready.dev?utm_source=linkedin&utm_medium=soc
 
 Which module has the deepest import chain in your repo today?
 
-# AI #CodeQuality #DeveloperProductivity
+# AI #CodeQuality #DeveloperProductivity #SoftwareArchitecture #TechnicalDebt #AIAssistedDevelopment
 
 ---
 
@@ -310,7 +322,7 @@ Measure first: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm
 
 What’s more effective in your team right now: prompt tuning or codebase simplification?
 
-# AI #Architecture #CodeQuality
+# AI #SoftwareArchitecture #CodeQuality #EngineeringManagement #DeveloperExperience #AIAssistedDevelopment
 
 ---
 
@@ -331,7 +343,7 @@ Human-in-loop remains non-negotiable: AI helps execute, humans decide standards.
 
 Which of these 3 checks fails most in your project?
 
-# BuildInPublic #AI #DeveloperTools
+# BuildInPublic #AI #DeveloperTools #IndieHackers #CodeQuality #AIAssistedDevelopment
 
 ---
 
@@ -350,7 +362,7 @@ Learn + run checks: <https://getaiready.dev?utm_source=linkedin&utm_medium=socia
 
 Where do you feel context overload most: APIs, auth, or data layer?
 
-# AIEngineering #CodebaseHealth #Productivity
+# AIEngineering #CodebaseHealth #DeveloperProductivity #SoftwareArchitecture #PromptEngineering #TechLeadership
 
 ---
 
@@ -367,7 +379,7 @@ Even with agentic workflows, keep humans in the loop for architecture and risk d
 
 What’s your ideal onboarding: checklist, wizard, or AI guide?
 
-# AgenticAI #DeveloperExperience #AI
+# AgenticAI #DeveloperExperience #AI #AIAutomation #WorkflowAutomation #HumanInTheLoop
 
 ---
 
@@ -385,7 +397,7 @@ Explore the approach: <https://getaiready.dev?utm_source=linkedin&utm_medium=soc
 
 What changed your team’s AI quality most: better prompts or better structure?
 
-# FounderJourney #AI #CodeQuality
+# FounderJourney #AI #CodeQuality #BuildInPublic #ProductEngineering #StartupEngineering
 
 ---
 
@@ -404,7 +416,7 @@ Start here: <https://getaiready.dev?utm_source=linkedin&utm_medium=social&utm_ca
 
 Comment “analyze” and I’ll DM details.
 
-# OpenSource #DeveloperCommunity #AI
+# OpenSource #DeveloperCommunity #AI #AIEngineering #CodeQuality #BuildInPublic
 
 ---
 
@@ -420,7 +432,7 @@ In AI-native workflows, faster diagnosis means safer velocity — with humans st
 
 Want the next post to focus more on visual diagnostics or team workflow?
 
-# AI #EngineeringManagement #DevTools
+# AI #EngineeringManagement #DevTools #SoftwareArchitecture #CodebaseHealth #DeveloperExperience
 
 ---
 
@@ -441,7 +453,7 @@ Try this with guided steps: <https://getaiready.dev?utm_source=linkedin&utm_medi
 
 Which domain are you cleaning first?
 
-# Refactoring #AI #CodeQuality
+# Refactoring #AI #CodeQuality #SoftwareArchitecture #TechDebt #DeveloperProductivity
 
 ---
 
@@ -461,7 +473,7 @@ Human-in-the-loop remains mission critical — especially for architecture and r
 
 Vote + share your “why” in comments.
 
-# AIPoll #SoftwareEngineering #DeveloperTools
+# AIPoll #SoftwareEngineering #DeveloperTools #EngineeringLeadership #AIAssistedDevelopment #CodeQuality
 
 ---
 

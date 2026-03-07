@@ -1,10 +1,21 @@
 'use client';
 
-import { useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
+import {
+  PlatformShell as SharedPlatformShell,
+  NavItem,
+} from '@aiready/components';
+import Link from 'next/link';
 import { Team, TeamMember } from '@/lib/db';
+import {
+  RocketIcon,
+  SettingsIcon,
+  TrendingUpIcon,
+  RobotIcon,
+  ChartIcon,
+} from './Icons';
+import { Mail } from 'lucide-react';
+import { signOut } from 'next-auth/react';
 
 interface Props {
   children: React.ReactNode;
@@ -28,51 +39,29 @@ export default function PlatformShell({
 }: Props) {
   const router = useRouter();
   const pathname = usePathname();
-  const [currentTeamId, setCurrentTeamId] = useState<string | 'personal'>(
-    'personal'
-  );
 
-  const handleSwitchTeam = (teamId: string | 'personal') => {
-    setCurrentTeamId(teamId);
-    // If we're not on dashboard, we might want to redirect to dashboard when switching teams
-    // to refresh the repository list for that context.
-    if (pathname !== '/dashboard') {
-      router.push('/dashboard');
-    }
-  };
+  const navItems: NavItem[] = [
+    { href: '/dashboard', label: 'Dashboard', icon: RocketIcon },
+    { href: '/strategy', label: 'Scan Strategy', icon: SettingsIcon },
+    { href: '/trends', label: 'Trends Explorer', icon: TrendingUpIcon },
+    { href: '/map', label: 'Codebase Map', icon: RobotIcon },
+    { href: '/metrics', label: 'Methodology', icon: ChartIcon },
+    { href: '/contact', label: 'Contact Us', icon: Mail },
+  ];
 
   return (
-    <div
-      className={`min-h-screen bg-[#0a0a0f] ${user ? 'flex overflow-hidden' : ''}`}
+    <SharedPlatformShell
+      user={user}
+      teams={teams}
+      overallScore={overallScore}
+      activePage={activePage}
+      pathname={pathname}
+      onNavigate={(href) => router.push(href)}
+      onSignOut={() => signOut({ callbackUrl: '/' })}
+      LinkComponent={Link}
+      navItems={navItems}
     >
-      {user && <Sidebar overallScore={overallScore} />}
-
-      <div className={`flex-1 flex flex-col min-w-0 ${user ? 'h-screen' : ''}`}>
-        {user && (
-          <Navbar
-            user={user}
-            teams={teams}
-            currentTeamId={currentTeamId}
-            onSwitchTeam={handleSwitchTeam}
-            activePage={activePage}
-          />
-        )}
-
-        <main
-          className={`relative flex-1 ${user ? 'overflow-y-auto' : ''} z-10`}
-        >
-          {user && (
-            <>
-              <div className="absolute inset-0 pointer-events-none -z-10 overflow-hidden">
-                <div className="orb orb-blue w-96 h-96 -top-48 -right-48 opacity-20" />
-                <div className="orb orb-purple w-80 h-80 bottom-0 -left-40 opacity-20" />
-              </div>
-              <div className="absolute inset-0 bg-grid-pattern opacity-10 -z-10" />
-            </>
-          )}
-          {children}
-        </main>
-      </div>
-    </div>
+      {children}
+    </SharedPlatformShell>
   );
 }
