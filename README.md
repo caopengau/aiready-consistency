@@ -7,7 +7,12 @@
 
 ## Overview
 
-Consistent naming and project structure are the bedrock of high-performing AI teams. The **Consistency** analyzer scans your project for naming violations, architectural drift, and pattern mismatches that slow down AI agents.
+Consistent naming and projectAI models reason better when your code follows consistent naming and structural patterns. **Consistency** analyzer identifies drift and enforces conventions to clarify intent.
+
+### Language Support
+
+- **Full Support:** TypeScript, JavaScript, Python, Java, Go, C#
+- **Capabilities:** Naming conventions, pattern consistency, auto-fix suggestions.
 
 ## 🏛️ Architecture
 

@@ -11,12 +11,12 @@ import type {
   ConsistencyIssue,
 } from './types';
 import { analyzeNamingAST } from './analyzers/naming-ast';
-import { analyzePythonNaming } from './analyzers/naming-python';
+import { analyzeNamingGeneralized } from './analyzers/naming-generalized';
 import { analyzePatterns } from './analyzers/patterns';
 
 /**
  * Main consistency analyzer that orchestrates all analysis types
- * Supports: TypeScript, JavaScript, Python
+ * Supports: TypeScript, JavaScript, Python, Java, C#, Go
  */
 export async function analyzeConsistency(
   options: ConsistencyOptions
@@ -35,18 +35,19 @@ export async function analyzeConsistency(
   // Scan files
   const filePaths = await scanFiles(scanOptions);
 
-  // Separate files by language
-  const tsJsFiles = filePaths.filter((f) => /\.(ts|tsx|js|jsx)$/i.test(f));
-  const pythonFiles = filePaths.filter((f) => /\.py$/i.test(f));
-
-  // Collect issues by category - now handles multiple languages
+  // Collect issues by category
   let namingIssues: any[] = [];
   if (checkNaming) {
-    const tsJsNamingIssues =
-      tsJsFiles.length > 0 ? await analyzeNamingAST(tsJsFiles) : [];
-    const pythonNamingIssues =
-      pythonFiles.length > 0 ? await analyzePythonNaming(pythonFiles) : [];
-    namingIssues = [...tsJsNamingIssues, ...pythonNamingIssues];
+    // 1. Generalized naming analysis for all supported files
+    namingIssues = await analyzeNamingGeneralized(filePaths);
+
+    // 2. Targeted deep AST analysis for TS/JS (handled by specialized analyzer)
+    const tsJsFiles = filePaths.filter((f) => /\.(ts|tsx|js|jsx)$/i.test(f));
+    if (tsJsFiles.length > 0) {
+      const deepTsIssues = await analyzeNamingAST(tsJsFiles);
+      // Merge issues, avoiding duplicates for exports if already checked
+      namingIssues = [...namingIssues, ...deepTsIssues];
+    }
   }
 
   const patternIssues = checkPatterns ? await analyzePatterns(filePaths) : [];
