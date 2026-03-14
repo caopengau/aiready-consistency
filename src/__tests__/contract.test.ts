@@ -25,7 +25,7 @@ describe('Context Analyzer Contract Validation', () => {
       rootDir: './test',
     } as any);
 
-    const summary = generateSummary(results);
+    const summary = generateSummary(results, {});
 
     // Context analyzer results need mapping to meet the strict AnalysisResult contract
     // because it uses 'file' instead of 'fileName' and 'issues: string[]' instead of 'issues: Issue[]'

@@ -3,7 +3,7 @@ import type {
   ContextSummary,
   ModuleCluster,
 } from './types';
-import { calculatePathEntropy, calculateDirectoryDistance } from './analyzer';
+import { calculatePathEntropy, calculateDirectoryDistance } from './metrics';
 import { GLOBAL_SCAN_OPTIONS } from '@aiready/core';
 
 /**
@@ -11,7 +11,7 @@ import { GLOBAL_SCAN_OPTIONS } from '@aiready/core';
  */
 export function generateSummary(
   results: ContextAnalysisResult[],
-  options?: any
+  options: any = {}
 ): ContextSummary {
   const config = options
     ? Object.fromEntries(
@@ -19,137 +19,92 @@ export function generateSummary(
           ([key]) => !GLOBAL_SCAN_OPTIONS.includes(key) || key === 'rootDir'
         )
       )
-    : undefined;
-
-  if (results.length === 0) {
-    return {
-      totalFiles: 0,
-      totalTokens: 0,
-      avgContextBudget: 0,
-      maxContextBudget: 0,
-      avgImportDepth: 0,
-      maxImportDepth: 0,
-      deepFiles: [],
-      avgFragmentation: 0,
-      fragmentedModules: [],
-      avgCohesion: 0,
-      lowCohesionFiles: [],
-      criticalIssues: 0,
-      majorIssues: 0,
-      minorIssues: 0,
-      totalPotentialSavings: 0,
-      topExpensiveFiles: [],
-      config,
-    };
-  }
+    : {};
 
   const totalFiles = results.length;
   const totalTokens = results.reduce((sum, r) => sum + r.tokenCost, 0);
-  const totalContextBudget = results.reduce(
-    (sum, r) => sum + r.contextBudget,
-    0
-  );
-  const avgContextBudget = totalContextBudget / totalFiles;
-  const maxContextBudget = Math.max(...results.map((r) => r.contextBudget));
+  const avgContextBudget =
+    totalFiles > 0
+      ? results.reduce((sum, r) => sum + r.contextBudget, 0) / totalFiles
+      : 0;
 
-  const avgImportDepth =
-    results.reduce((sum, r) => sum + r.importDepth, 0) / totalFiles;
-  const maxImportDepth = Math.max(...results.map((r) => r.importDepth));
-
+  // Find deep files
   const deepFiles = results
-    .filter((r) => r.importDepth >= 5)
-    .map((r) => ({ file: r.file, depth: r.importDepth }))
-    .sort((a, b) => b.depth - a.depth)
-    .slice(0, 10);
+    .filter((r) => r.importDepth > 5)
+    .map((r) => ({ file: r.file, depth: r.importDepth }));
 
-  const avgFragmentation =
-    results.reduce((sum, r) => sum + r.fragmentationScore, 0) / totalFiles;
+  const maxImportDepth = Math.max(0, ...results.map((r) => r.importDepth));
 
+  // Find fragmented modules (clusters)
   const moduleMap = new Map<string, ContextAnalysisResult[]>();
-  for (const result of results) {
-    for (const domain of result.domains) {
-      if (!moduleMap.has(domain)) moduleMap.set(domain, []);
-      moduleMap.get(domain)!.push(result);
+  results.forEach((r) => {
+    const parts = r.file.split('/');
+    // Try to identify domain/module (e.g., packages/core, src/utils)
+    let domain = 'root';
+    if (parts.length > 2) {
+      domain = parts.slice(0, 2).join('/');
     }
-  }
+    if (!moduleMap.has(domain)) moduleMap.set(domain, []);
+    moduleMap.get(domain)!.push(r);
+  });
 
   const fragmentedModules: ModuleCluster[] = [];
-  for (const [domain, files] of moduleMap.entries()) {
-    if (files.length < 2) continue;
-    const fragmentationScore =
-      files.reduce((sum, f) => sum + f.fragmentationScore, 0) / files.length;
-    if (fragmentationScore < 0.3) continue;
-
-    const totalTokens = files.reduce((sum, f) => sum + f.tokenCost, 0);
-    const avgCohesion =
-      files.reduce((sum, f) => sum + f.cohesionScore, 0) / files.length;
-    const targetFiles = Math.max(1, Math.ceil(files.length / 3));
-
+  moduleMap.forEach((files, domain) => {
+    const clusterTokens = files.reduce((sum, f) => sum + f.tokenCost, 0);
     const filePaths = files.map((f) => f.file);
-    const pathEntropy = calculatePathEntropy(filePaths);
-    const directoryDistance = calculateDirectoryDistance(filePaths);
+    const avgEntropy = calculatePathEntropy(filePaths);
 
-    function jaccard(a: string[], b: string[]) {
-      const s1 = new Set(a || []);
-      const s2 = new Set(b || []);
-      if (s1.size === 0 && s2.size === 0) return 0;
-      const inter = new Set([...s1].filter((x) => s2.has(x)));
-      const uni = new Set([...s1, ...s2]);
-      return uni.size === 0 ? 0 : inter.size / uni.size;
+    // A module is fragmented if it has many files with high directory distance
+    // and relatively low cohesion
+    const fragmentationScore = Math.min(1, avgEntropy * (files.length / 10));
+
+    if (fragmentationScore > 0.4) {
+      fragmentedModules.push({
+        domain,
+        files: filePaths,
+        fragmentationScore,
+        totalTokens: clusterTokens,
+        avgCohesion:
+          files.reduce((sum, f) => sum + f.cohesionScore, 0) / files.length,
+        suggestedStructure: {
+          targetFiles: Math.ceil(files.length / 2),
+          consolidationPlan: [
+            `Consolidate ${files.length} files in ${domain} into fewer modules`,
+          ],
+        },
+      });
     }
+  });
 
-    let importSimTotal = 0;
-    let importPairs = 0;
-    for (let i = 0; i < files.length; i++) {
-      for (let j = i + 1; j < files.length; j++) {
-        importSimTotal += jaccard(
-          files[i].dependencyList || [],
-          files[j].dependencyList || []
-        );
-        importPairs++;
-      }
-    }
+  fragmentedModules.sort((a, b) => b.fragmentationScore - a.fragmentationScore);
 
-    const importCohesion = importPairs > 0 ? importSimTotal / importPairs : 0;
+  const avgFragmentation =
+    fragmentedModules.length > 0
+      ? fragmentedModules.reduce((sum, m) => sum + m.fragmentationScore, 0) /
+        fragmentedModules.length
+      : 0;
 
-    fragmentedModules.push({
-      domain,
-      files: files.map((f) => f.file),
-      totalTokens,
-      fragmentationScore,
-      avgCohesion,
-      importCohesion,
-      pathEntropy,
-      directoryDistance,
-      suggestedStructure: {
-        targetFiles,
-        consolidationPlan: [
-          `Consolidate ${files.length} files across ${new Set(files.map((f) => f.file.split('/').slice(0, -1).join('/'))).size} directories`,
-          `Target ~${targetFiles} core modules to reduce context switching`,
-        ],
-      },
-    });
-  }
-
+  // Cohesion
   const avgCohesion =
-    results.reduce((sum, r) => sum + r.cohesionScore, 0) / totalFiles;
+    results.reduce((sum, r) => sum + r.cohesionScore, 0) / (totalFiles || 1);
+
   const lowCohesionFiles = results
     .filter((r) => r.cohesionScore < 0.4)
-    .map((r) => ({ file: r.file, score: r.cohesionScore }))
-    .sort((a, b) => a.score - b.score)
-    .slice(0, 10);
+    .map((r) => ({ file: r.file, score: r.cohesionScore }));
 
+  // Issues
   const criticalIssues = results.filter(
     (r) => r.severity === 'critical'
   ).length;
   const majorIssues = results.filter((r) => r.severity === 'major').length;
   const minorIssues = results.filter((r) => r.severity === 'minor').length;
+
   const totalPotentialSavings = results.reduce(
-    (sum, r) => sum + r.potentialSavings,
+    (sum, r) => sum + (r.potentialSavings || 0),
     0
   );
 
-  const topExpensiveFiles = results
+  const topExpensiveFiles = [...results]
     .sort((a, b) => b.contextBudget - a.contextBudget)
     .slice(0, 10)
     .map((r) => ({
@@ -162,8 +117,9 @@ export function generateSummary(
     totalFiles,
     totalTokens,
     avgContextBudget,
-    maxContextBudget,
-    avgImportDepth,
+    maxContextBudget: Math.max(0, ...results.map((r) => r.contextBudget)),
+    avgImportDepth:
+      results.reduce((sum, r) => sum + r.importDepth, 0) / (totalFiles || 1),
     maxImportDepth,
     deepFiles,
     avgFragmentation,
