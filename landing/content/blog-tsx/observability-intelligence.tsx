@@ -12,16 +12,11 @@ const Post = () => (
     </blockquote>
 
     <div className="my-12 max-w-5xl mx-auto text-center">
-      <div className="w-full h-64 bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-900 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl mb-12">
-        <div className="text-center p-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 to-purple-200">
-            Observability as Intelligence
-          </h1>
-          <p className="text-indigo-200 text-lg md:text-xl">
-            Machines that Self-Critique
-          </p>
-        </div>
-      </div>
+      <img
+        src="/agentic-shift-series-8.png"
+        alt="Observability as Intelligence Cover"
+        className="w-full h-auto rounded-3xl mb-12 shadow-2xl border border-white/5"
+      />
     </div>
 
     <h2>The Feedback Vacuum</h2>

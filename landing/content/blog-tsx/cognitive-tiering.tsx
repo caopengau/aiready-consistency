@@ -12,16 +12,11 @@ const Post = () => (
     </blockquote>
 
     <div className="my-12 max-w-5xl mx-auto text-center">
-      <div className="w-full h-64 bg-gradient-to-br from-indigo-900 via-slate-900 to-purple-900 rounded-3xl flex items-center justify-center border border-white/10 shadow-2xl mb-12">
-        <div className="text-center p-8">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 to-purple-200">
-            Cognitive Tiering
-          </h1>
-          <p className="text-indigo-200 text-lg md:text-xl">
-            Managing the Multi-Headed Brain
-          </p>
-        </div>
-      </div>
+      <img
+        src="/agentic-shift-series-6.png"
+        alt="Cognitive Tiering Cover"
+        className="w-full h-auto rounded-3xl mb-12 shadow-2xl border border-white/5"
+      />
     </div>
 
     <h2>The Amnesia Risk</h2>
