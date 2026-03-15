@@ -1,5 +1,5 @@
 import { parseFileExports } from '@aiready/core';
-import type { ExportInfo, DependencyNode, FileClassification } from './types';
+import type { ExportInfo } from './types';
 import { inferDomain, extractExports } from './semantic-analysis';
 
 /**
@@ -33,7 +33,7 @@ export function extractExportsWithAST(
       dependencies: exp.dependencies,
       typeReferences: (exp as any).typeReferences,
     }));
-  } catch (error) {
+  } catch {
     // Ultimate fallback
     return extractExports(content, filePath, domainOptions, fileImports);
   }

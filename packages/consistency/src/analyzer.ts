@@ -2,7 +2,6 @@ import {
   scanFiles,
   Severity,
   IssueType,
-  GLOBAL_SCAN_OPTIONS,
   getSeverityLevel,
 } from '@aiready/core';
 import type { AnalysisResult, Issue } from '@aiready/core';

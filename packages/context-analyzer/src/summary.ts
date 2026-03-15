@@ -3,8 +3,8 @@ import type {
   ContextSummary,
   ModuleCluster,
 } from './types';
-import { calculatePathEntropy, calculateDirectoryDistance } from './metrics';
 import { GLOBAL_SCAN_OPTIONS } from '@aiready/core';
+import { calculatePathEntropy } from './metrics';
 
 /**
  * Generate summary of context analysis results

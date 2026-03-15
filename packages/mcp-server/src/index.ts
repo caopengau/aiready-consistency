@@ -4,7 +4,7 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { ToolRegistry, ToolName } from '@aiready/core';
+import { ToolRegistry } from '@aiready/core';
 
 // Pre-load essential tools (following CLI pattern)
 // In a real implementation, we would want to dynamically load these

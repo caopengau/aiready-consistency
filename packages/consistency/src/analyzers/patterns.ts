@@ -13,7 +13,6 @@ export async function analyzePatterns(
 
   // 1. Error handling style
   const tryCatchPattern = /try\s*\{/g;
-  const catchPattern = /catch\s*\(\s*(\w+)\s*\)/g;
 
   const styleStats = {
     tryCatch: 0,
@@ -38,8 +37,6 @@ export async function analyzePatterns(
       void err;
     }
   }
-
-  const totalFiles = filePaths.length;
 
   // Report inconsistencies if there's a significant mix
   if (styleStats.tryCatch > 0 && styleStats.thenCatch > 0) {

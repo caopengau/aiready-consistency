@@ -1,23 +1,6 @@
 #!/usr/bin/env node
 
 import { Command } from 'commander';
-import { analyzeContext } from './analyzer';
-import { generateSummary } from './summary';
-import {
-  displayConsoleReport,
-  generateHTMLReport,
-  runInteractiveSetup,
-} from './utils/output-formatter';
-import chalk from 'chalk';
-import { writeFileSync } from 'fs';
-import {
-  loadMergedConfig,
-  handleJSONOutput,
-  handleCLIError,
-  getElapsedTime,
-  resolveOutputPath,
-} from '@aiready/core';
-
 import { contextActionHandler } from './cli-action';
 
 const program = new Command();
