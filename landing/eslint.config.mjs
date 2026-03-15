@@ -22,4 +22,17 @@ export default [
       },
     },
   },
+  // Blog content files: relax rules that don't apply to authored content
+  {
+    files: ['content/blog-tsx/**/*.tsx', 'content/blog-tsx/**/*.ts'],
+    rules: {
+      'react/no-unescaped-entities': 'off',
+      'react/jsx-no-comment-textnodes': 'off',
+      '@next/next/no-html-link-for-pages': 'off',
+      '@next/next/no-img-element': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      'import/no-anonymous-default-export': 'off',
+    },
+  },
 ];
