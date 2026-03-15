@@ -5,7 +5,7 @@
  * naming conventions across all supported languages.
  */
 
-import { getParser, Severity, IssueType } from '@aiready/core';
+import { getParser, Severity } from '@aiready/core';
 import type { NamingIssue } from '../types';
 import { readFileSync } from 'fs';
 
@@ -31,7 +31,6 @@ export async function analyzeNamingGeneralized(
       // 1. Check Exports
       for (const exp of result.exports) {
         let pattern: RegExp | undefined;
-        const typeName = exp.type;
 
         if (exp.type === 'class') {
           pattern = conventions.classPattern;

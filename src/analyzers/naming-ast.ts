@@ -4,9 +4,7 @@ import type { NamingIssue } from '../types';
 import {
   parseFile,
   traverseAST,
-  getFunctionName,
   getLineNumber,
-  isCoverageContext,
   isLoopStatement,
 } from '../utils/ast-parser';
 import {
@@ -154,7 +152,7 @@ function checkVariableNaming(
   issues: NamingIssue[],
   context: any
 ) {
-  const { name, node, line, options } = varInfo;
+  const { name, line, options } = varInfo;
 
   // Skip very common small names if they are in acceptable context
   if (isAcceptableInContext(name, context, options)) {
