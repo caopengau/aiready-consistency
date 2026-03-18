@@ -88,6 +88,7 @@ export type FileClassification =
   | 'email-template' // Email templates/layouts with structural cohesion
   | 'parser-file' // Parser/transformer files with single transformation purpose
   | 'nextjs-page' // Next.js App Router page with SEO/structured data exports
+  | 'spoke-module' // Intentional monorepo spoke package file
   | 'mixed-concerns' // Multiple domains, potential refactoring candidate
   | 'unknown'; // Unable to classify
 

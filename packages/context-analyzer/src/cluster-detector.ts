@@ -1,5 +1,9 @@
 import type { DependencyGraph, ModuleCluster } from './types';
 import { calculateFragmentation, calculateEnhancedCohesion } from './metrics';
+import {
+  classifyFile,
+  adjustFragmentationForClassification,
+} from './classifier';
 
 /**
  * Group files by domain to detect module clusters
@@ -73,29 +77,42 @@ export function detectModuleClusters(
       sharedImportRatio = union.size > 0 ? intersection.size / union.size : 0;
     }
 
-    const fragmentation = calculateFragmentation(files, domain, {
+    const rawFragmentation = calculateFragmentation(files, domain, {
       ...options,
       sharedImportRatio,
     });
 
-    // Average cohesion for the cluster
+    // Average cohesion and adjusted fragmentation for the cluster
     let totalCohesion = 0;
+    let totalAdjustedFragmentation = 0;
+
     files.forEach((f) => {
       const node = graph.nodes.get(f);
-      if (node) totalCohesion += calculateEnhancedCohesion(node.exports);
+      if (node) {
+        const cohesion = calculateEnhancedCohesion(node.exports);
+        totalCohesion += cohesion;
+
+        const classification = classifyFile(node, cohesion);
+        totalAdjustedFragmentation += adjustFragmentationForClassification(
+          rawFragmentation,
+          classification
+        );
+      }
     });
+
     const avgCohesion = totalCohesion / files.length;
+    const fragmentationScore = totalAdjustedFragmentation / files.length;
 
     clusters.push({
       domain,
       files,
       totalTokens,
-      fragmentationScore: fragmentation,
+      fragmentationScore,
       avgCohesion,
       suggestedStructure: generateSuggestedStructure(
         files,
         totalTokens,
-        fragmentation
+        fragmentationScore
       ),
     });
   }

@@ -299,3 +299,17 @@ export function isConfigFile(node: DependencyNode): boolean {
 
   return isConfigName || isConfigPath || hasSchemaExport;
 }
+
+/**
+ * Detect if a file is part of a hub-and-spoke monorepo architecture.
+ *
+ * Many files spread across multiple packages (spokes) is intentional in
+ * AIReady and shouldn't be penalized as heavily for fragmentation.
+ *
+ * @param node - The dependency node to analyze.
+ * @returns True if the file path suggests it belongs to a spoke package.
+ */
+export function isHubAndSpokeFile(node: DependencyNode): boolean {
+  const { file } = node;
+  return /\/packages\/[a-zA-Z0-9-]+\/src\//.test(file);
+}

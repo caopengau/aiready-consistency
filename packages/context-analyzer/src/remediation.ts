@@ -59,6 +59,11 @@ export function getClassificationRecommendations(
         'Next.js App Router page detected - metadata/JSON-LD/component pattern is cohesive',
         'Multiple exports (metadata, faqJsonLd, default) serve single page purpose',
       ];
+    case 'spoke-module':
+      return [
+        'Spoke module detected - intentional monorepo separation is good for modularity',
+        'Ensure this spoke only exports what is necessary for the hub or other spokes',
+      ];
     case 'mixed-concerns':
       return [
         'Consider splitting this file by domain',

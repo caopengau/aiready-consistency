@@ -10,6 +10,7 @@ import {
   isSessionFile,
   isUtilityModule,
   isConfigFile,
+  isHubAndSpokeFile,
 } from './heuristics';
 
 /**
@@ -25,6 +26,7 @@ export const Classification = {
   PARSER: 'parser-file' as const,
   COHESIVE_MODULE: 'cohesive-module' as const,
   UTILITY_MODULE: 'utility-module' as const,
+  SPOKE_MODULE: 'spoke-module' as const,
   MIXED_CONCERNS: 'mixed-concerns' as const,
   UNKNOWN: 'unknown' as const,
 };
@@ -95,6 +97,11 @@ export function classifyFile(
     return Classification.COHESIVE_MODULE;
   }
 
+  // 11. Detect Spoke modules in monorepo
+  if (isHubAndSpokeFile(node)) {
+    return Classification.SPOKE_MODULE;
+  }
+
   // Cohesion and Domain heuristics
   if (domains.length <= 1 && domains[0] !== 'unknown') {
     return Classification.COHESIVE_MODULE;
@@ -152,6 +159,8 @@ export function adjustCohesionForClassification(
       return Math.max(0.72, Math.min(1, baseCohesion + 0.3));
     case Classification.PARSER:
       return Math.max(0.7, Math.min(1, baseCohesion + 0.3));
+    case Classification.SPOKE_MODULE:
+      return Math.max(baseCohesion, 0.6);
     case Classification.COHESIVE_MODULE:
       return Math.max(baseCohesion, 0.7);
     case Classification.MIXED_CONCERNS:
@@ -237,6 +246,8 @@ export function adjustFragmentationForClassification(
     case Classification.PARSER:
     case Classification.NEXTJS_PAGE:
       return baseFragmentation * 0.2;
+    case Classification.SPOKE_MODULE:
+      return baseFragmentation * 0.15; // Heavily discount intentional monorepo separation
     case Classification.COHESIVE_MODULE:
       return baseFragmentation * 0.3;
     case Classification.MIXED_CONCERNS:
