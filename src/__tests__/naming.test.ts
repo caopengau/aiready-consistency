@@ -15,7 +15,7 @@ describe('analyzeNaming', () => {
   describe('single letter variables detection', () => {
     it('should detect single letter variables', async () => {
       const mockContent = `const a = 10;
-let b = 20;
+let e = 20;
 var c = 30;`;
 
       (readFileSync as ReturnType<typeof vi.fn>).mockReturnValue(mockContent);
