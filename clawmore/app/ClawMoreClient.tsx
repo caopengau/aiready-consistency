@@ -53,7 +53,7 @@ const SOFTWARE_JSON_LD = {
   '@type': 'SoftwareApplication',
   name: 'ClawMore',
   description:
-    'Simple one-click OpenClaw deployment. Autonomous agentic swarm for serverless AWS. AI orchestration, AI automation, and agent-to-agent collaboration.',
+    'ClawMore: The first autonomous platform for Multi-Human Multi-Agent Collaboration on serverless AWS. Orchestrate autonomous agentic swarms with human-in-the-loop workflows.',
   applicationCategory: 'DevOpsApplication',
   operatingSystem: 'AWS',
   offers: {
@@ -208,10 +208,11 @@ export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
             <span className="italic">Manages Itself</span>
           </h1>
 
-          <p className="text-2xl sm:text-2xl text-white/90 max-w-2xl mx-auto mb-10 sm:mb-14 leading-relaxed font-light drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
-            ClawMore automatically monitors, optimizes, and fixes your AWS
-            infrastructure. Save hours of manual work and reduce costs with
-            AI-powered automation.
+          <p className="text-2xl sm:text-2xl text-white/90 max-w-3xl mx-auto mb-10 sm:mb-14 leading-relaxed font-light drop-shadow-[0_2px_10px_rgba(0,0,0,1)]">
+            The world's first platform for{' '}
+            <strong>Multi-Human Multi-Agent Collaboration</strong>. ClawMore
+            automatically monitors, optimizes, and evolves your AWS
+            infrastructure through autonomous agentic swarms.
           </p>
 
           <div className="w-full max-w-lg sm:max-w-none flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-4 sm:gap-8">
@@ -301,17 +302,30 @@ export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
               reduces costs
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="glass-card p-6 sm:p-10 hover:border-cyber-blue/30 transition-all group">
               <div className="w-14 h-14 rounded-sm bg-cyber-blue/10 flex items-center justify-center text-cyber-blue mb-8 border border-cyber-blue/20 group-hover:scale-110 transition-transform">
                 <RefreshCcw className="w-7 h-7" />
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">
-                Automatic Monitoring
+                Autonomous Monitoring
               </h3>
               <p className="text-zinc-500 leading-relaxed text-sm">
                 24/7 monitoring of your AWS infrastructure. We detect issues
                 before they become problems and fix them automatically.
+              </p>
+            </div>
+
+            <div className="glass-card p-6 sm:p-10 hover:border-amber-500/30 transition-all group">
+              <div className="w-14 h-14 rounded-sm bg-amber-500/10 flex items-center justify-center text-amber-400 mb-8 border border-amber-500/20 group-hover:scale-110 transition-transform">
+                <Activity className="w-7 h-7" />
+              </div>
+              <h3 className="text-2xl font-bold mb-4 tracking-tight">
+                Multi-Agent Swarms
+              </h3>
+              <p className="text-zinc-500 leading-relaxed text-sm">
+                Deploy swarms of specialized agents that collaborate to solve
+                complex architectural challenges and infrastructure evolution.
               </p>
             </div>
 
@@ -320,12 +334,12 @@ export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
                 <Cpu className="w-7 h-7" />
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">
-                AI-Powered Fixes
+                Human-Agent Interaction
               </h3>
               <p className="text-zinc-500 leading-relaxed text-sm">
-                Our AI analyzes your code and infrastructure to suggest and
-                apply improvements. Save hours of manual debugging and
-                optimization.
+                Bridge the gap with human-in-the-loop workflows. Multi-human
+                multi-agent communication enables seamless collaborative
+                engineering.
               </p>
             </div>
 
@@ -334,10 +348,10 @@ export default function ClawMoreClient({ apiUrl, dict }: ClawMoreClientProps) {
                 <ShieldCheck className="w-7 h-7" />
               </div>
               <h3 className="text-2xl font-bold mb-4 tracking-tight">
-                Secure & Compliant
+                Secure Evolution
               </h3>
               <p className="text-zinc-500 leading-relaxed text-sm">
-                Your code stays in your AWS account. We enforce serverless best
+                Your code stays in your account. We enforce serverless best
                 practices and maintain security compliance automatically.
               </p>
             </div>

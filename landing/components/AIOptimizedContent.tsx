@@ -20,20 +20,26 @@ export function AIOptimizedContent() {
       <meta itemProp="priceCurrency" content="USD" />
 
       <h1 itemProp="headline">
-        AIReady: Free CLI Tools to Make Your Codebase AI-Ready
+        AIReady: Free CLI Tools to Optimize for Multi-Human Multi-Agent
+        Collaboration
       </h1>
 
       <div itemProp="description">
         <p>
           AIReady provides free, open-source command-line tools that analyze
-          your codebase to identify and fix issues that make it harder for AI
-          models to understand and work with your code.
+          your codebase to identify and fix issues that make it harder for
+          Multi-Human Multi-Agent Collaboration (MH-MA). Our tools optimize for
+          autonomous AI agents and human-in-the-loop workflows.
         </p>
       </div>
 
       <section itemProp="featureList">
         <h2>Key Features</h2>
         <ul>
+          <li>
+            MH-MA Potential Analysis - evaluates how well humans and agents can
+            collaborate in your codebase
+          </li>
           <li>
             Semantic duplicate detection - finds similar code patterns that
             waste AI context

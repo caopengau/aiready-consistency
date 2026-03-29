@@ -1,13 +1,13 @@
 # @aiready/agents
 
-> AIReady Spoke: Agent orchestration, task execution, and multi-step workflow management for AI-native development.
+> AIReady Spoke: Multi-Human Multi-Agent (MH-MA) orchestration, task execution, and collaborative workflow management.
 
 [![npm version](https://img.shields.io/npm/v/@aiready/agents.svg)](https://npmjs.com/package/@aiready/agents)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## Overview
 
-The **Agents** package provides the orchestration layer for running AI-powered tasks against a codebase. It manages multi-step agent workflows, coordinates tool execution, and handles the feedback loops that enable autonomous analysis and remediation.
+The **Agents** package provides the orchestration layer for **Multi-Human Multi-Agent Collaboration (MH-MA)**. It manages multi-step agent workflows, coordinates tool execution, and handles the feedback loops that enable autonomous analysis and remediation with human-in-the-loop oversight.
 
 ## 🏛️ Architecture
 
@@ -37,10 +37,12 @@ Legend:
 
 ## Features
 
+- **MH-MA Orchestration**: Manages multi-step workflows coordinating multiple AI agents and human stakeholders
 - **Workflow Orchestration**: Manages multi-step agentic workflows coordinating multiple AIReady spokes
 - **Task Execution**: Runs analysis tasks and remediation actions with proper error handling and retries
 - **Feedback Loops**: Implements verify→fix→verify cycles for autonomous code improvement
 - **Tool Integration**: Bridges AIReady analysis tools with AI model APIs
+- **Human-Agent Collaboration**: Provides hooks for human-in-the-loop validation and strategic guidance
 
 ## Installation
 

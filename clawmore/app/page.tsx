@@ -4,13 +4,13 @@ import ClawMoreClient from './ClawMoreClient';
 import { getDictionary } from '../lib/get-dictionary';
 
 export const metadata: Metadata = {
-  title: 'ClawMore | Autonomous Infrastructure Evolution',
+  title: 'ClawMore | Multi-Human Multi-Agent Collaboration for AWS',
   description:
-    "ClawMore: The world's first autonomous agentic system for AWS. Real-time infrastructure synthesis and self-healing.",
+    "ClawMore: The world's first autonomous system for Multi-Human Multi-Agent Collaboration on AWS. Real-time infrastructure synthesis, self-healing, and human-in-the-loop agentic swarms.",
   openGraph: {
-    title: 'ClawMore | Autonomous Infrastructure Evolution',
+    title: 'ClawMore | Multi-Human Multi-Agent Collaboration for AWS',
     description:
-      "The world's first autonomous agentic system for AWS. Real-time infrastructure synthesis and self-healing.",
+      "The world's first autonomous system for Multi-Human Multi-Agent Collaboration on AWS. Real-time infrastructure synthesis and agentic swarming.",
     url: 'https://clawmore.ai',
     siteName: 'ClawMore',
     locale: 'en_US',
@@ -20,15 +20,15 @@ export const metadata: Metadata = {
         url: '/og-home.png',
         width: 1200,
         height: 630,
-        alt: 'ClawMore - Autonomous Infrastructure Evolution',
+        alt: 'ClawMore - Multi-Human Multi-Agent Collaboration',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ClawMore | Autonomous Infrastructure Evolution',
+    title: 'ClawMore | Multi-Human Multi-Agent Collaboration for AWS',
     description:
-      "The world's first autonomous agentic system for AWS. Real-time infrastructure synthesis and self-healing.",
+      "The world's first autonomous system for Multi-Human Multi-Agent Collaboration on AWS. Real-time infrastructure synthesis and agentic swarming.",
     creator: '@clawmore',
     images: ['/og-home.png'],
   },

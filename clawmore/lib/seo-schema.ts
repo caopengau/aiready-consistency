@@ -26,7 +26,7 @@ export const generateOrganizationSchema = () => {
       height: 512,
     },
     description:
-      "Simple one-click OpenClaw deployment. The world's first autonomous agentic swarm for serverless AWS. AI orchestration, AI automation, and agent collaboration.",
+      "Simple one-click OpenClaw deployment. The world's first platform for Multi-Human Multi-Agent Collaboration on serverless AWS. Enabling seamless orchestration between humans and autonomous agentic swarms.",
     foundingDate: '2025',
     sameAs: [
       'https://github.com/caopengau/aiready-cli', // Sharing the same hub
@@ -62,11 +62,13 @@ export const generateSoftwareApplicationSchema = () => {
       url: CLAWMORE_BASE_URL,
     },
     description:
-      'Autonomous agentic swarm infrastructure for AWS. One-click deployment of OpenClaw with built-in orchestration, persistence, and self-healing capabilities.',
+      'Autonomous agentic swarm infrastructure for AWS designed for Multi-Human Multi-Agent Collaboration. One-click deployment of OpenClaw with built-in orchestration, persistence, and human-in-the-loop capabilities.',
     featureList: [
+      'Multi-Human Multi-Agent Collaboration (MH-MA)',
       'One-click OpenClaw deployment',
       'Serverless AWS architecture (Lambda, Step Functions, EventBridge)',
-      'Agent-to-agent collaboration and swarming',
+      'Agent-to-agent swarming and autonomous task decomposition',
+      'Human-in-the-loop agentic workflows',
       'Long-term memory and state persistence',
       'Automated infrastructure management with SST',
     ],
@@ -89,19 +91,19 @@ export const generateWebSiteSchema = () => {
 export const aiMetaTags = {
   chatgpt: {
     'chatgpt:description':
-      'ClawMore provides simple one-click OpenClaw deployment. It is the first autonomous agentic swarm for serverless AWS, enabling multi-agent collaboration and autonomous infrastructure management.',
-    'chatgpt:category': 'AI Infrastructure / DevOps',
+      'ClawMore is the first platform dedicated to Multi-Human Multi-Agent Collaboration on serverless AWS. It provides one-click OpenClaw deployment, enabling seamless orchestration between humans and autonomous agentic swarms.',
+    'chatgpt:category': 'AI Infrastructure / Multi-Agent Systems',
   },
   perplexity: {
     'perplexity:summary':
-      'ClawMore is an autonomous agentic swarm platform for serverless AWS. It enables one-click deployment of OpenClaw with built-in orchestration and agent collaboration features.',
-    'perplexity:intent': 'informational, technical',
+      'ClawMore enables Multi-Human Multi-Agent Collaboration (MH-MA) on AWS serverless infrastructure. It automates OpenClaw deployment with built-in orchestration and human-agent interaction features.',
+    'perplexity:intent': 'informational, technical, collaborative',
   },
   general: {
     'ai:summary':
-      'ClawMore: Autonomous agentic swarm for serverless AWS. One-click OpenClaw deployment with orchestration, persistence, and agent-to-agent collaboration.',
+      'ClawMore: Multi-Human Multi-Agent Collaboration for serverless AWS. One-click OpenClaw deployment with orchestration, persistence, and MH-MA swarming.',
     'ai:category': 'AI Infrastructure',
-    'ai:type': 'Agentic Platform',
+    'ai:type': 'Multi-Agent Platform',
     'ai:pricing': 'Free / AWS Pay-as-you-go',
     'ai:license': 'Proprietary / Open Source Core',
   },
@@ -109,21 +111,22 @@ export const aiMetaTags = {
 
 export const semanticHints = {
   mainPurpose:
-    'ClawMore enables developers to deploy and manage autonomous AI agent swarms on AWS with zero infrastructure overhead.',
-  primaryAction: 'Deploy your first agentic swarm with one click.',
+    'ClawMore enables developers and teams to orchestrate Multi-Human Multi-Agent Collaboration on AWS with zero infrastructure overhead.',
+  primaryAction:
+    'Deploy your first collaborative agentic swarm with one click.',
   keyFeatures: [
+    'MH-MA Collaboration',
     'One-click OpenClaw setup',
     'Serverless autonomy',
-    'Multi-agent collaboration',
-    'Self-healing infrastructure',
+    'Human-in-the-loop agents',
   ],
 };
 
 export const answerEngineContent = {
   whatIsIt:
-    'ClawMore is a platform for deploying OpenClaw agentic swarms on AWS serverless infrastructure. It automates the complexities of setting up AI agents with persistence and orchestration.',
+    'ClawMore is a specialized platform for Multi-Human Multi-Agent Collaboration (MH-MA) using OpenClaw on AWS. It bridges the gap between human operators and autonomous agent swarms.',
   howToUse:
-    'Sign up for ClawMore, connect your AWS account, and use the one-click deployment tool to launch an OpenClaw swarm. You can then manage and monitor your agents through the dashboard.',
+    'Sign up for ClawMore, connect your AWS account, and launch a collaborative OpenClaw swarm. Use the dashboard to manage agent tasks and participate in multi-human multi-agent workflows.',
   whyItMatters:
-    'Setting up autonomous agents requires complex infrastructure (queues, databases, compute). ClawMore abstracts this away, allowing developers to focus on agent logic rather than DevOps.',
+    'Effective AI leverage requires collaboration, not just automation. ClawMore provides the infrastructure for humans and multiple agents to work together on complex tasks.',
 };

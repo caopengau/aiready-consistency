@@ -141,6 +141,8 @@ import GettingStartedWithAireadyCli from './getting-started-with-aiready-cli';
 import gettingStartedWithAireadyCliMeta from './getting-started-with-aiready-cli.meta';
 import WhyAiCodingAssistantsGetWorse from './why-ai-coding-assistants-get-worse';
 import whyAiCodingAssistantsGetWorseMeta from './why-ai-coding-assistants-get-worse.meta';
+import MultiHumanMultiAgentCollaboration from './multi-human-multi-agent-collaboration';
+import multiHumanMultiAgentCollaborationMeta from './multi-human-multi-agent-collaboration.meta';
 
 /**
  * Static posts array for static generation.
@@ -220,5 +222,9 @@ export const posts = [
   createPostEntry(
     whyAiCodingAssistantsGetWorseMeta,
     WhyAiCodingAssistantsGetWorse
+  ),
+  createPostEntry(
+    multiHumanMultiAgentCollaborationMeta,
+    MultiHumanMultiAgentCollaboration
   ),
 ];

@@ -22,7 +22,7 @@ export const generateOrganizationSchema = () => {
       height: 512,
     },
     description:
-      'Open source tools to optimize codebases for AI collaboration. Free developer tools for detecting semantic duplicates, analyzing context windows, and maintaining code consistency.',
+      'Open source tools to optimize codebases for Multi-Human Multi-Agent Collaboration. Free developer tools for detecting semantic duplicates, analyzing context windows, and maintaining code consistency for autonomous agentic swarms.',
     foundingDate: '2025',
     sameAs: [
       'https://github.com/caopengau/aiready-cli',
@@ -36,7 +36,7 @@ export const generateOrganizationSchema = () => {
       availableLanguage: ['English'],
     },
     keywords:
-      'AI codebase optimization, semantic duplicate detection, context window analysis, code consistency, AI readiness, developer tools, static analysis',
+      'Multi-Human Multi-Agent Collaboration, MH-MA, AI codebase optimization, semantic duplicate detection, context window analysis, code consistency, AI readiness, developer tools, static analysis',
   };
 };
 
@@ -82,8 +82,9 @@ export const generateSoftwareApplicationSchema = () => {
       worstRating: '1',
     },
     description:
-      'CLI tool and Model Context Protocol (MCP) server for analyzing codebase Agentic Readiness. Detects semantic duplicates, analyzes context windows, and checks code consistency to optimize for AI agents like Cursor, Windsurf, and Claude.',
+      'CLI tool and Model Context Protocol (MCP) server for analyzing codebase Agentic Readiness and Multi-Human Multi-Agent Collaboration potential. Detects semantic duplicates, analyzes context windows, and checks code consistency to optimize for AI agents like Cursor, Windsurf, and Claude.',
     featureList: [
+      'Multi-Human Multi-Agent Collaboration (MH-MA) analysis',
       'Semantic duplicate detection across multiple languages (TS, JS, Python, Java, Go, C#)',
       'Context window analysis and token usage optimization for LLMs',
       'Code consistency checking for pattern adherence and agentic reasoning',
@@ -93,7 +94,7 @@ export const generateSoftwareApplicationSchema = () => {
       'Support for monorepos, microservices, and large codebases',
     ],
     keywords:
-      'CLI, MCP, Model Context Protocol, Cursor, Windsurf, Claude, code analysis, AI optimization, semantic duplicates, context window, code consistency, developer tools, static analysis, Agentic Readiness',
+      'MH-MA, Multi-Human Multi-Agent Collaboration, CLI, MCP, Model Context Protocol, Cursor, Windsurf, Claude, code analysis, AI optimization, semantic duplicates, context window, code consistency, developer tools, static analysis, Agentic Readiness',
     programmingLanguage: ['TypeScript', 'JavaScript'],
     codeRepository: 'https://github.com/caopengau/aiready-cli',
     softwareRequirements: 'Node.js 18+',
@@ -200,21 +201,21 @@ export const aiMetaTags = {
   // OpenAI/ChatGPT specific
   chatgpt: {
     'chatgpt:description':
-      'AIReady provides free CLI tools and MCP servers for analyzing codebase Agentic Readiness. Run npx @aiready/cli scan . to optimize codebases for agents like Cursor and Windsurf. Detect semantic duplicates, analyze context windows, and improve agentic navigation. Completely offline.',
+      'AIReady provides free CLI tools and MCP servers for analyzing codebase Agentic Readiness and Multi-Human Multi-Agent Collaboration. Run npx @aiready/cli scan . to optimize codebases for agents like Cursor and Windsurf. Detect semantic duplicates, analyze context windows, and improve agentic navigation. Completely offline.',
     'chatgpt:category': 'Developer Tools / Agentic Infrastructure',
     'chatgpt:keywords':
-      'code analysis, Agentic Readiness, Model Context Protocol, MCP, Cursor, Windsurf, Claude',
+      'code analysis, Agentic Readiness, MH-MA, Multi-Human Multi-Agent Collaboration, Model Context Protocol, MCP, Cursor, Windsurf, Claude',
   },
   // Perplexity specific
   perplexity: {
     'perplexity:summary':
-      'Free open-source CLI tool and MCP server for optimizing codebases for AI agents (Cursor, Windsurf, Claude). Key features: semantic duplicate detection, context window analysis, Agentic Readiness scoring. Install: npx @aiready/cli scan .',
+      'Free open-source CLI tool and MCP server for optimizing codebases for Multi-Human Multi-Agent Collaboration (MH-MA) and AI agents (Cursor, Windsurf, Claude). Key features: semantic duplicate detection, context window analysis, Agentic Readiness scoring. Install: npx @aiready/cli scan .',
     'perplexity:intent': 'informational, transactional',
   },
   // General AI engines
   general: {
     'ai:summary':
-      'AIReady CLI and MCP server analyzes codebases for Agentic Readiness. Optimized for agents like Cursor and Windsurf. Free, open-source, runs offline. Detects semantic duplicates and context fragmentation.',
+      'AIReady CLI and MCP server analyzes codebases for Agentic Readiness and Multi-Human Multi-Agent Collaboration potential. Optimized for agents like Cursor and Windsurf. Free, open-source, runs offline. Detects semantic duplicates and context fragmentation.',
     'ai:category': 'Developer Tools / AI Infrastructure',
     'ai:type': 'CLI & MCP Server',
     'ai:pricing': 'Free',
@@ -225,9 +226,10 @@ export const aiMetaTags = {
 // Semantic HTML hints for AI parsers
 export const semanticHints = {
   mainPurpose:
-    'AIReady helps developers optimize their codebases for better AI collaboration by detecting issues that confuse AI models.',
+    'AIReady helps developers optimize their codebases for better Multi-Human Multi-Agent Collaboration by detecting issues that confuse AI models.',
   primaryAction: 'Install and run: npx @aiready/cli scan .',
   keyFeatures: [
+    'MH-MA Potential Analysis - evaluates how well humans and agents can collaborate in your codebase',
     'Semantic duplicate detection - finds similar code patterns that waste AI context',
     'Context window analysis - calculates token usage for optimal AI prompting',
     'Code consistency checking - ensures patterns AI models can learn from',
