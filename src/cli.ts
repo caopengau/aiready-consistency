@@ -3,6 +3,7 @@
 import { Command } from 'commander';
 import { analyzeConsistency } from './analyzer';
 import type { ConsistencyOptions } from './types';
+import { Severity } from '@aiready/core';
 import chalk from 'chalk';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { dirname } from 'path';
@@ -91,7 +92,8 @@ EXAMPLES:
       checkNaming: options.naming !== false && mergedConfig.checkNaming,
       checkPatterns: options.patterns !== false && mergedConfig.checkPatterns,
       checkArchitecture: options.architecture || mergedConfig.checkArchitecture,
-      minSeverity: (options.minSeverity as string) || mergedConfig.minSeverity,
+      minSeverity:
+        (options.minSeverity as Severity) || mergedConfig.minSeverity,
       include: options.include?.split(',') || mergedConfig.include,
       exclude: options.exclude?.split(',') || mergedConfig.exclude,
     };
