@@ -108,7 +108,7 @@ const Post = () => (
     <p>
       <strong>Ready to start?</strong> Use the{' '}
       <a
-        href="https://github.com/caopengau/aiready-cli"
+        href="https://github.com/getaiready/aiready-cli"
         className="text-indigo-400 hover:underline"
       >
         AIReady CLI

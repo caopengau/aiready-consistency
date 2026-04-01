@@ -294,7 +294,7 @@ aiready scan . --upload --api-key ar_your_key
       </li>
       <li>
         <strong>Contribute:</strong>{' '}
-        <a href="https://github.com/caopengau/aiready">GitHub</a>
+        <a href="https://github.com/getaiready/aiready-cli">GitHub</a>
       </li>
     </ol>
 

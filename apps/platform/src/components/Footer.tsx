@@ -69,7 +69,7 @@ export function Footer() {
                 Main Site
               </a>
               <a
-                href="https://github.com/caopengau/aiready-cli"
+                href="https://github.com/getaiready/aiready-cli"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-slate-500 hover:text-cyan-400 transition-colors flex items-center gap-1.5 group"

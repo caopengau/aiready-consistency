@@ -37,7 +37,7 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://github.com/caopengau/aiready-cli"
+                  href="https://github.com/getaiready/aiready-cli"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-cyan-400 transition-colors"

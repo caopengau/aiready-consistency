@@ -39,13 +39,10 @@ export default $config({
     // --- Secrets (Security Hardening) ---
     const StripeSecretKey = new sst.Secret('StripeSecretKey');
     const GithubServiceToken = new sst.Secret('GithubServiceToken');
-    const OpenRouterApiKey = new sst.Secret('OpenRouterApiKey');
     const GithubClientSecret = new sst.Secret('GithubClientSecret');
     const GoogleClientSecret = new sst.Secret('GoogleClientSecret');
     const AdminPassword = new sst.Secret('AdminPassword');
-    const SpokeTelegramBotToken = new sst.Secret('SpokeTelegramBotToken');
     const SpokeMiniMaxApiKey = new sst.Secret('SpokeMiniMaxApiKey');
-    const SpokeOpenAIApiKey = new sst.Secret('SpokeOpenAIApiKey');
     const SpokeGithubToken = new sst.Secret('SpokeGithubToken');
 
     // --- Stripe Products & Prices (IaC) ---
@@ -324,13 +321,10 @@ export default $config({
         mutationTaxPrice,
         StripeSecretKey,
         GithubServiceToken,
-        OpenRouterApiKey,
         GithubClientSecret,
         GoogleClientSecret,
         AdminPassword,
-        SpokeTelegramBotToken,
         SpokeMiniMaxApiKey,
-        SpokeOpenAIApiKey,
         SpokeGithubToken,
       ],
     });

@@ -367,7 +367,7 @@ export const getUser = async (id) => {
       </li>
     </ul>
     <p>
-      I built <a href="https://github.com/caopengau/aiready-cli">aiready</a> to
+      I built <a href="https://github.com/getaiready/aiready-cli">aiready</a> to
       solve this problem for my own team. It's open source, configurable, and
       designed for the AI-first development workflow.
     </p>
@@ -456,7 +456,7 @@ npx @aiready/context-analyzer ./src
     <p className="text-sm italic text-slate-500">
       Peng Cao is the founder of{' '}
       <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{' '}
-      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
+      <a href="https://github.com/getaiready/aiready-cli">aiready</a>, an
       open-source suite for measuring and optimizing codebases for AI adoption.
       He's been writing code for 15 years and learning to work with AI
       assistants for the last 2.

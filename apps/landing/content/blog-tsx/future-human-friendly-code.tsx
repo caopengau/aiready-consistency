@@ -149,7 +149,7 @@ const Post = () => (
       <li>
         <strong>Contribute:</strong> Join us on{' '}
         <a
-          href="https://github.com/caopengau/aiready-cli"
+          href="https://github.com/getaiready/aiready-cli"
           className="text-blue-500 hover:underline"
         >
           GitHub
@@ -171,8 +171,8 @@ const Post = () => (
     <ul className="list-disc pl-6 mb-4 space-y-2">
       <li>
         GitHub:{' '}
-        <a href="https://github.com/caopengau/aiready-cli">
-          github.com/caopengau/aiready-cli
+        <a href="https://github.com/getaiready/aiready-cli">
+          github.com/getaiready/aiready-cli
         </a>
       </li>
       <li>
@@ -180,8 +180,8 @@ const Post = () => (
       </li>
       <li>
         Report issues:{' '}
-        <a href="https://github.com/caopengau/aiready-cli/issues">
-          github.com/caopengau/aiready-cli/issues
+        <a href="https://github.com/getaiready/aiready-cli/issues">
+          github.com/getaiready/aiready-cli/issues
         </a>
       </li>
     </ul>
@@ -191,7 +191,7 @@ const Post = () => (
     <p className="text-sm italic text-slate-500">
       *Peng Cao is the founder of{' '}
       <a href="https://receiptclaimer.com">receiptclaimer</a> and creator of{' '}
-      <a href="https://github.com/caopengau/aiready-cli">aiready</a>, an
+      <a href="https://github.com/getaiready/aiready-cli">aiready</a>, an
       open-source suite for measuring and optimising codebases for AI adoption.*
     </p>
 

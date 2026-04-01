@@ -245,7 +245,7 @@ export function Header() {
                   </p>
                   <div className="flex items-center justify-center gap-4">
                     <Link
-                      href="https://github.com/caopengau/aiready-cli"
+                      href="https://github.com/getaiready/aiready-cli"
                       className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                     >
                       GitHub

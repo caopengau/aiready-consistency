@@ -114,9 +114,9 @@ const Post = () => (
 
     <h2>The Solution: AI Readiness</h2>
     <p>
-      We built <a href="https://github.com/caopengau/aiready">AIReady</a> — an
-      open-source tool that measures and improves how well your codebase works
-      with AI.
+      We built <a href="https://github.com/getaiready/aiready-cli">AIReady</a> —
+      an open-source tool that measures and improves how well your codebase
+      works with AI.
     </p>
 
     <h3>How It Works</h3>
@@ -210,8 +210,8 @@ aiready scan . --score
     <ul>
       <li>
         <strong>GitHub:</strong>{' '}
-        <a href="https://github.com/caopengau/aiready">
-          github.com/caopengau/aiready
+        <a href="https://github.com/getaiready/aiready-cli">
+          github.com/getaiready/aiready-cli
         </a>
       </li>
       <li>
