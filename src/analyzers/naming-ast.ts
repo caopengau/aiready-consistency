@@ -15,6 +15,47 @@ import {
 import { ACCEPTABLE_ABBREVIATIONS, VAGUE_NAMES } from './naming-constants';
 
 /**
+ * Known font family names that use underscores and should not be flagged
+ * as naming convention violations.
+ */
+const KNOWN_FONT_FAMILIES = new Set([
+  'Geist_Mono',
+  'Geist_Sans',
+  'JetBrains_Mono',
+  'Fira_Code',
+  'Source_Code_Pro',
+  'IBM_Plex_Mono',
+  'Space_Mono',
+  'Roboto_Mono',
+  'Ubuntu_Mono',
+  'Inconsolata',
+  'Cousine',
+  'Anonymous_Pro',
+  'Arimo',
+  'Tinos',
+  'Cabin',
+  'Cardo',
+  'Gentium',
+  'Libre_Baskerville',
+  'Lora',
+  'Merriweather',
+  'Noto_Sans',
+  'Noto_Serif',
+  'Open_Sans',
+  'Playfair_Display',
+  'PT_Sans',
+  'PT_Serif',
+  'Raleway',
+  'Roboto',
+  'Slabo',
+  'Source_Sans_Pro',
+  'Source_Serif_Pro',
+  'Spectral',
+  'Titillium_Web',
+  'Ubuntu',
+]);
+
+/**
  * Advanced naming analyzer using TypeScript AST
  */
 export async function analyzeNamingAST(
@@ -126,6 +167,11 @@ function checkNamingConvention(
   issues: NamingIssue[],
   context: any
 ) {
+  // Skip known font family names (e.g., Geist_Mono, JetBrains_Mono)
+  if (KNOWN_FONT_FAMILIES.has(name)) {
+    return;
+  }
+
   let isValid = true;
   if (convention === 'PascalCase') {
     isValid = /^[A-Z][a-zA-Z0-9]*$/.test(name);
