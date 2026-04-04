@@ -86,7 +86,7 @@ define sync_to_github
 	split_commit=$$(git rev-parse "$$branch"); \
 	git push --no-verify -f "$$remote" "$$branch":$(4); \
 	$(call log_success,Synced $(1) to GitHub repo ($(4))); \
-	version=$$(node -p "require('$(1)/package.json').version"); \
+	version=$$(node -p "require('./$(1)/package.json').version"); \
 	tag_name="$(5)-v$$version"; \
 	$(call log_step,Tagging remote commit $$split_commit as $$tag_name...); \
 	if git ls-remote --tags "$$remote" "$$tag_name" | grep -q "$$tag_name"; then \

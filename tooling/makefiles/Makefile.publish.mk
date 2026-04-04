@@ -122,7 +122,7 @@ npm-publish: npm-check ## Publish spoke to npm. Usage: make npm-publish SPOKE=pa
 # Generic GitHub publish (requires SPOKE parameter)
 publish: ## Publish spoke to GitHub. Usage: make publish SPOKE=pattern-detect [OWNER=username]
 	$(call require_spoke)
-	$(call sync_to_github,$(ROOT_DIR)/$(call SPOKE_DIR,$(SPOKE)),aiready-$(SPOKE),$(or $(OWNER),$(PUBLIC_OWNER)),$(TARGET_BRANCH),$(SPOKE))
+	$(call sync_to_github,$(call SPOKE_DIR,$(SPOKE)),aiready-$(SPOKE),$(or $(OWNER),$(PUBLIC_OWNER)),$(TARGET_BRANCH),$(SPOKE))
 
 # Pattern rules for convenience
 publish-%: ## Publish @aiready/% to GitHub
@@ -330,10 +330,10 @@ github-sync-action:
 
 
 publish-vscode-sync: ## Sync VS Code extension to GitHub. Usage: make publish-vscode-sync [PUBLIC_OWNER=username]
-	$(call sync_to_github,$(EXTENSION_DIR),aiready-vscode-extension,$(or $(OWNER),$(PUBLIC_OWNER)),main,vscode-extension)
+	$(call sync_to_github,apps/vscode-extension,aiready-vscode-extension,$(or $(OWNER),$(PUBLIC_OWNER)),main,vscode-extension)
 
 publish-action-sync: ## Sync GitHub Action to standalone repo. Usage: make publish-action-sync [PUBLIC_OWNER=username]
-	$(call sync_to_github,$(ROOT_DIR)/tooling/github-action,aiready-action,$(or $(OWNER),$(PUBLIC_OWNER)),main,github-action)
+	$(call sync_to_github,tooling/github-action,aiready-action,$(or $(OWNER),$(PUBLIC_OWNER)),main,github-action)
 
 # ============================================================================
 # MCP Server Publishing
